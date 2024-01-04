@@ -1,0 +1,29 @@
+{% extends 'includes/admin/layout.html' %} 
+
+{% block title %} | Dashboard {% endblock %}
+{% block content %}
+
+{% if request.user.profil.profile == 'presse'%}
+
+    {% include 'dashboard/presse.html' %}
+
+{% endif %}
+
+
+{% if request.user.profil.profile == 'designer'%}
+
+    {% include 'dashboard/design.html' %}
+
+{% endif %}
+
+{% if request.user.profil.profile == 'groupecentrale'%}
+
+    {% include 'dashboard/gcentrale.html' %}
+
+{% endif %}
+
+
+
+
+{% endblock %}
+

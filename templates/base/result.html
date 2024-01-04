@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultat de la Superposition</title>
+</head>
+<body>
+    <h1>Résultat de la Superposition</h1>
+
+    {% if result_image %}
+    <img src="{{ result_image }}" alt="Image Superposée">
+    {% endif %}
+
+    <a href="{% url 'overlay_photos' %}">Retour au Formulaire</a>
+</body>
+</html>

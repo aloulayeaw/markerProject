@@ -1,0 +1,150 @@
+{% load static %}
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="keywords"
+      content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 5 admin, bootstrap 5, css3 dashboard, bootstrap 5 dashboard, Ample lite admin bootstrap 5 dashboard, frontend, responsive bootstrap 5 admin template, Ample admin lite dashboard bootstrap 5 dashboard template"
+    />
+    <meta
+      name="description"
+      content="Ample Admin Lite is powerful and clean admin dashboard template, inpired from Bootstrap Framework"
+    />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Espace Commango Sénégal</title>
+    <link
+      rel="canonical"
+      href="https://www.wrappixel.com/templates/ample-admin-lite/"
+    />
+    <!-- Favicon icon -->
+    {% load static %}
+    <link rel="shortcut icon" href="{% static '/img/logo_icon_mang.png' %}" />
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <!-- Custom CSS -->
+    <link
+      href="{% static 'theme/ample-admin/css/style.min.css'%}"
+      rel="stylesheet"
+    />
+     <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.bundle.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/mapdata/countries/sn/sn-all.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="preloader">
+      <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+      </div>
+    </div>
+    <div
+      id="main-wrapper"
+      data-layout="vertical"
+      data-navbarbg="skin5"
+      data-sidebartype="full"
+      data-sidebar-position="absolute"
+      data-header-position="absolute"
+      data-boxed-layout="full"
+    >
+      {% include "layout/admin/menu-header.html" %}
+       {% include "layout/admin/menu-aside.html" %}
+      <div class="page-wrapper">
+        <div class="page-breadcrumb bg-white">
+          <div class="row align-items-center">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+              <h4 class="page-title">
+                {% block block_title %} Basic Table {% endblock %}
+              </h4>
+            </div>
+            <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+              <div class="d-md-flex">
+                <ol class="breadcrumb ms-auto">
+                  <li>
+                    <a href="#" class="fw-normal">
+                      {% block block_sub_title %} Dashboard{% endblock %}
+                    </a>
+                  </li>
+                </ol>
+                <a
+                  href="javascript:history.go(-1)"
+                  {% comment %} {% url 'home' %} {% endcomment %}
+                  class="btn btn-danger d-none d-md-block pull-right ms-3 hidden-xs hidden-sm waves-effect waves-light text-white"
+                >
+                  Retour</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          {% block block_content %} {% endblock %}
+        </div>
+        <footer class="footer text-center">
+          2021 © Commango Senegal
+          <a href="#">commango.sn</a>
+        </footer>
+      </div>
+    </div>
+
+     
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="{% static 'theme/ample-admin/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'theme/ample-admin/js/app-style-switcher.js' %}"></script>
+    <!--Wave Effects -->
+    <script src="{% static 'theme/ample-admin/js/waves.js' %}"></script>
+    <!--Menu sidebar -->
+    <script src="{% static 'theme/ample-admin/js/sidebarmenu.js' %}"></script>
+    <!--Custom JavaScript -->
+    <script src="{% static 'theme/ample-admin/js/custom.js' %}"></script>
+    <script>
+      function typeInspection(that) {
+          if (that.value == "Continue") {
+              
+              document.getElementById("datefin").style.display = "block";
+              
+          } else {
+              
+              document.getElementById("datefin").style.display = "none";
+              
+          }
+      }
+      
+    </script>
+
+    {% block block_script %} {% endblock %}
+{% comment  %}
+
+<script src="{% static 'theme/ample-admin/plugins/bower_components/chartist/dist/chartist.min.js' %}"></script>
+<script src="{% static 'theme/ample-admin/plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
+<script src="{% static 'theme/ample-admin/js/pages/dashboards/dashboard1.js' %}" ></script>
+
+{% endcomment %}
+
+
+  </body>
+</html>

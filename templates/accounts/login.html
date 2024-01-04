@@ -1,0 +1,126 @@
+{% extends 'index.html' %}
+
+{% block content %}
+{% load static %}
+		<!-- main start -->
+		<main class="js-animsition-overlay" data-animsition-overlay="true">
+			<!-- pos-rel start -->
+
+
+			<!-- form section start -->
+			<section class="pos-rel bg-img-cover" style="background-image:url({% static 'assets/images/slide/slide1.png' %})">
+				<!-- bg-overlay -->
+				<div class="bg-overlay-black"></div>
+				<!-- pos-rel start -->
+				<div class="pos-rel flex-min-height-100vh">
+					<!-- container start -->
+					<div class="container small padding-top-bottom-120 form-box">
+						<h1 class="text-center">Veillez vous connecter</h1>
+                                    <div class="contact-section">
+            </div>  
+
+                    {% include 'includes/messages.html' %}
+						<!-- flex-container start -->
+						<form action="{% url 'login' %}" method="POST" name="formobrsv" id="send_form" class="padding-top-90">
+                        {% csrf_token %}
+							<div class="four-columns">
+								<div class="column-l-margin-10">
+									<input type="email" name="username" name="email" placeholder="Ton email" id="email" required class="form-input js-pointer-small">
+								</div>
+							</div><!-- column end -->
+							<!-- column start -->
+							<div class="four-columns">
+								<div class="column-l-margin-10">
+									<input type="password" name="password" placeholder="Ton mot de passe" id="mot de passe" required class="form-input js-pointer-small">
+								</div>
+							</div><!-- column end -->
+							<!-- column start -->
+							<div class="twelve-columns text-center padding-top-90">
+								<button id="send" class="border-btn js-pointer-large">
+									<span class="border-btn__inner">Se Connecter</span>
+									<span class="btn-wait">Wait</span>
+									<span class="border-btn__lines-1"></span>
+									<span class="border-btn__lines-2"></span>
+								</button>
+							</div><!-- column end -->
+						</form><!-- flex-container end -->
+					</div><!-- container end -->
+
+					<!-- alert start -->
+					<div class="js-popup-fade" id="m_sent">
+						<div class="js-popup">
+							<div class="popup-icon">
+								<i class="fas fa-check"></i>
+							</div>
+							<p class="popup-alert headline-xs">
+								Thank you!<br>
+								Your submission<br>
+								has been received!
+							</p>
+							<div class="js-popup-close js-pointer-large">
+								<div class="flip-btn" data-text="Close">Close</div>
+							</div>
+						</div>
+					</div><!-- alert end -->
+
+					<!-- alert start -->
+					<div class="js-popup-fade" id="m_err">
+						<div class="js-popup">
+							<div class="popup-icon">
+								<i class="fas fa-times"></i>
+							</div>
+							<p class="popup-alert headline-xs">Error</p>
+							<div class="js-popup-close js-pointer-large">
+								<div class="flip-btn" data-text="Close">Close</div>
+							</div>
+						</div>
+					</div><!-- alert end -->
+				</div><!-- pos-rel end -->
+			</section><!-- form section end -->
+
+<!-- Contact section start -->
+{% comment %} <div class="contact-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-section">
+                    <div class="logo-2">
+                        <a href="index.html">
+                            <img src="{% static 'img/logos/black-logo.png' %}" alt="logo">
+                        </a>
+                    </div>
+                    <h3>Sign into your account</h3>
+                    {% include 'includes/messages.html' %}
+                    <form action="{% url 'login' %}" method="POST">
+                      {% csrf_token %}
+                        <div class="form-group form-box">
+                            <input type="text" name="username" class="input-text" placeholder="Username" required>
+                            <i class="flaticon-mail"></i>
+                        </div>
+                        <div class="form-group form-box">
+                            <input type="password" name="password" class="input-text" placeholder="Password" required>
+                            <i class="flaticon-lock"></i>
+                        </div>
+                        <div class="form-group mb-0 clearfix">
+                            <button type="submit" class="btn-md btn-theme float-left">Login</button>
+                        </div>
+                        <div class="extra-login clearfix">
+                            <span>Or Login With</span>
+                        </div>
+                        <div class="clearfix"></div>
+                        <ul class="social-list">
+                        </ul>
+                    </form>
+                    <p>Don't have an account? <a href="{% url 'register' %}" class="thembo"> Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+<!-- Contact section end -->
+
+            <br><br><br>
+		</main><!-- main end -->
+
+
+{% endblock %}

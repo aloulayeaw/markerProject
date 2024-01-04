@@ -1,0 +1,126 @@
+{% extends 'index.html' %}
+
+{% block title %} | Register {% endblock %}
+{% block content %}
+{% load static %}
+
+		<!-- main start -->
+		<main class="js-animsition-overlay" data-animsition-overlay="true">
+			<!-- pos-rel start -->
+
+
+			<!-- form section start -->
+			<section class="pos-rel bg-img-cover" style="background-image:url({% static 'assets/images/slide/slide1.png' %})">
+				<!-- bg-overlay -->
+				<div class="bg-overlay-black"></div>
+				<!-- pos-rel start -->
+				<div class="pos-rel flex-min-height-100vh">
+					<!-- container start -->
+					<div class="container small padding-top-bottom-120 form-box">
+						<h4 class="headline-xxxxs text-center">Lets Get In Touch!</h4>
+                                    <div class="contact-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-section">
+                                <div class="logo-2">
+                                    <a href="index.html">
+                                        <img src="{% static 'img/logos/black-logo.png' %}" alt="logo">
+                                    </a>
+                                </div>
+                                <h3>Create an account</h3>
+
+                                
+                                <form action="{% url 'create_account' %}" method="POST">
+                                {% csrf_token %}
+                                    <label for="username">Nom d'utilisateur:</label>
+                                    <input type="text" id="username" name="username" required>
+                                    <br>
+                                
+                                    <label for="email">Email:</label>
+                                    <input type="email" id="email" name="email" required>
+                                    <br>
+                                
+                                    <label for="password">Mot de passe:</label>
+                                    <input type="password" id="password" name="password" required>
+                                    <br>
+                                
+                                    <label for="name">Nom:</label>
+                                    <input type="text" id="name" name="name" required>
+                                    <br>
+                                
+                                    <label for="prenom">Prénom:</label>
+                                    <input type="text" id="prenom" name="prenom" required>
+                                    <br>
+                                
+                                    <label for="sexe">Sexe:</label>
+                                    <select id="sexe" name="sexe">
+                                        <option value="homme">Homme</option>
+                                        <option value="femme">Femme</option>
+                                    </select>
+                                    <br>
+                                
+                                    <label for="code_postal">Code postal:</label>
+                                    <input type="text" id="code_postal" name="code_postal" required>
+                                    <br>
+                                
+                                    <label for="adresse">Adresse:</label>
+                                    <input type="text" id="adresse" name="adresse" required>
+                                    <br>
+                                
+                                    <label for="profile">Profile:</label>
+                                    <input type="text" id="profile" name="profile">
+                                    <br>
+                                
+                                    <input type="submit" value="S'inscrire">
+                                </form>
+                                {% comment %} <p>Already a member? <a href="{% url 'login' %}" class="thembo"> Login here</a></p> {% endcomment %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+						<!-- flex-container start -->
+						{% comment %} <form action="#" method="post" name="formobrsv" id="send_form" class="flex-container padding-top-90">
+							<!-- column start -->
+							<div class="four-columns">
+								<div class="column-r-margin-10">
+									<input type="text" name="first_name" placeholder="Enter your name" id="first_name" required class="form-input js-pointer-small">
+								</div>
+							</div><!-- column end -->
+							<!-- column start -->
+							<div class="four-columns">
+								<div class="column-l-r-margin-5">
+									<input type="text" name="last_name" placeholder="Enter your last name" id="last_name" required class="form-input js-pointer-small">
+								</div>
+							</div><!-- column end -->
+							<!-- column start -->
+							<div class="four-columns">
+								<div class="column-l-margin-10">
+									<input type="email" name="email" placeholder="Enter your email address" id="email" required class="form-input js-pointer-small">
+								</div>
+							</div><!-- column end -->
+							<!-- column start -->
+							<div class="twelve-columns">
+								<textarea name="message" placeholder="Enter your message" id="message" required class="form-input js-pointer-small"></textarea>
+							</div><!-- column end -->
+							<!-- column start -->
+							<div class="twelve-columns text-center padding-top-90">
+								<button id="send" class="border-btn js-pointer-large">
+									<span class="border-btn__inner">submit</span>
+									<span class="btn-wait">Wait</span>
+									<span class="border-btn__lines-1"></span>
+									<span class="border-btn__lines-2"></span>
+								</button>
+							</div><!-- column end -->
+						</form><!-- flex-container end --> {% endcomment %}
+					</div><!-- container end -->
+
+				</div><!-- pos-rel end -->
+			</section><!-- form section end -->
+            <br><br><br>
+		</main><!-- main end -->
+
+
+
+{% endblock %}
