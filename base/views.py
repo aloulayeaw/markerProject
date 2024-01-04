@@ -27,7 +27,11 @@ def overlay_photos(request):
             temp_image_path = os.path.join(settings.MEDIA_ROOT, temp_image_path)
 
             # Load the uploaded image using OpenCV
-            image = cv2.imread(temp_image_path, cv2.IMREAD_UNCHANGED)
+            image = cv2.imread(temp_image_path)
+
+            # Ensure image is in the correct format for face detection
+            if image is None or len(image.shape) not in [2, 3]:
+                return JsonResponse({'success': False, 'message': 'Invalid image format.'})
 
             # Load the background image from a specific path
             background_path = 'D:/data/image_marker.jpeg'
@@ -40,20 +44,26 @@ def overlay_photos(request):
             # Find the contours of the white area
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             if contours:
-                # Assume the largest contour is the white area
                 cnt = max(contours, key=cv2.contourArea)
                 x, y, w, h = cv2.boundingRect(cnt)
 
-                # Use the Haar Cascade face detector to find the head in the uploaded image
+                # Use the Haar Cascade face detector
                 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-                faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=7, minSize=(40, 40))
+                gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
                 if len(faces) > 0:
-                    # If at least one face is found, take the first (largest)
                     face_x, face_y, face_w, face_h = faces[0]
 
-                    # Extract the head region from the image
-                    head = image[face_y:face_y + face_h, face_x:face_x + face_w]
+                    # Adjust the face region to reduce zoom
+                    zoom_factor = 0.7  # Increased zoom factor
+                    expanded_width = int(face_w * (1 + zoom_factor))
+                    expanded_height = int(face_h * (1 + zoom_factor))
+                    expanded_x = max(face_x - int(expanded_width * zoom_factor / 2), 0)
+                    expanded_y = max(face_y - int(expanded_height * zoom_factor / 2), 0)
+                    expanded_x_end = min(expanded_x + expanded_width, image.shape[1])
+                    expanded_y_end = min(expanded_y + expanded_height, image.shape[0])
+                    head = image[expanded_y:expanded_y_end, expanded_x:expanded_x_end]
 
                     # Create a circular mask with transparency
                     radius = min(head.shape[0], head.shape[1]) // 2
@@ -87,15 +97,28 @@ def overlay_photos(request):
 
                 # Delete the temporary files
                 fs.delete(temp_image_path)
+                
+                # After saving the result image
+                result_image_url = fs.url('D:/Dev/markerProject/temp/result.jpg')  # Adjust according to how your media files are served
+                # Prepare the context with the form and result image URL
+                context = {
+                    'form': form,
+                    'result_image': result_image_url
+                }
 
-                return JsonResponse({'success': True, 'message': 'Circular head placed in the white area successfully.', 'result_image': result_image_path})
+                # Render the template with the context
+                return render(request, 'base/upload.html', context)
             else:
-                return JsonResponse({'success': False, 'message': 'No white area found or image invalid.'})
+                return JsonResponse({'success': False, 'message': 'Invalid form.'})
         else:
-            return JsonResponse({'success': False, 'message': 'Invalid form.'})
-    else:
-        form = PhotoUploadForm()
-    return render(request, 'base/upload.html', {'form': form})
+            form = PhotoUploadForm()
+
+            # Render the form initially without the result image
+            context = {
+                'form': form,
+                'result_image': None
+            }
+            return render(request, 'base/upload.html', context)
 
 
 def contact(request):

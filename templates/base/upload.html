@@ -2,17 +2,30 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Superposition d'Images</title>
+    <title>Image Overlay</title>
+    <script type="text/javascript">
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            setTimeout(function() {
+                document.getElementById('loading').style.display = 'none';
+            }, 10000); // 10 seconds delay
+        }
+    </script>
 </head>
 <body>
-    <h1>Data</h1>
-
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" onsubmit="showLoading()">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Télécharger et Superposer">
     </form>
 
+    <div id="loading" style="display:none;">
+        <p>Loading...</p>
+    </div>
+
+    {% if result_image %}
+        <img src="D:/Dev/markerProject/temp/{{ result_image }}" alt="Result Image" />
+        <a href="D:/Dev/markerProject/temp/{{ result_image }}" download>Download Image</a>
+    {% endif %}
 </body>
 </html>
