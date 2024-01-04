@@ -56,7 +56,7 @@ def overlay_photos(request):
                     face_x, face_y, face_w, face_h = faces[0]
 
                     # Adjust the face region to reduce zoom
-                    zoom_factor = 0.7  # Increased zoom factor
+                    zoom_factor = 0.6  # Increased zoom factor
                     expanded_width = int(face_w * (1 + zoom_factor))
                     expanded_height = int(face_h * (1 + zoom_factor))
                     expanded_x = max(face_x - int(expanded_width * zoom_factor / 2), 0)
