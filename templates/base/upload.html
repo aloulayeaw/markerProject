@@ -2,30 +2,160 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Overlay</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        /* Define the size for the image */
+        #result-image {
+            max-width: 100%;  /* Scale the image to fit within its container */
+            height: auto;  /* Maintain the aspect ratio */
+            max-width: 300px;  /* Optional: Set a maximum width */
+            border-radius: 8px;  /* Optional: Rounded corners for the image */
+            cursor: pointer;  /* Indicate that the image is clickable */
+        }
+
+        /* Additional styling for the form and container */
+        .custom-form {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+
+        .custom-form input[type="submit"] {
+            width: 100%;
+        }
+
+        /* Style the loading spinner container */
+        #loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+            text-align: center;
+            padding: 10px;
+            display: none;
+        }
+
+        #loading {
+            display: inline-block;
+        }
+
+        #image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #download-link {
+            margin-top: 10px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        #download-link:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        /* Modal styling */
+        .modal-content img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+
     <script type="text/javascript">
         function showLoading() {
-            document.getElementById('loading').style.display = 'block';
-            setTimeout(function() {
-                document.getElementById('loading').style.display = 'none';
-            }, 10000); // 10 seconds delay
+            document.getElementById('loading-container').style.display = 'block';
         }
+
+        function saveToLocalStorage(base64Image) {
+            localStorage.setItem('resultImage', base64Image);
+        }
+
+        function loadFromLocalStorage() {
+            const savedImage = localStorage.getItem('resultImage');
+            if (savedImage) {
+                document.getElementById('result-image').src = savedImage;
+                document.getElementById('modal-image').src = savedImage;
+                document.getElementById('download-link-modal').href = savedImage;
+                document.getElementById('download-link').href = savedImage;
+                document.getElementById('image-container').style.display = 'block';
+            }
+        }
+
+        window.onload = loadFromLocalStorage;
     </script>
 </head>
-<body>
-    <form method="post" enctype="multipart/form-data" onsubmit="showLoading()">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Télécharger et Superposer">
-    </form>
+<body class="bg-light">
 
-    <div id="loading" style="display:none;">
-        <p>Loading...</p>
+    <!-- Loading Spinner at the top -->
+    <div id="loading-container">
+        <div id="loading" class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
 
-    {% if result_image %}
-        <img src="D:/Dev/markerProject/temp/{{ result_image }}" alt="Result Image" />
-        <a href="D:/Dev/markerProject/temp/{{ result_image }}" download>Download Image</a>
-    {% endif %}
+    <div class="container">
+        <form method="post" enctype="multipart/form-data" class="custom-form shadow" onsubmit="showLoading()">
+            <h3 class="text-center mb-4">Image</h3>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Envoyer" class="btn btn-primary">
+        </form>
+
+        {% if result_image %}
+            <script type="text/javascript">
+                saveToLocalStorage("data:image/jpeg;base64,{{ result_image }}");
+            </script>
+        {% endif %}
+
+        <div id="image-container" style="display:none;">
+            <img id="result-image" alt="Result Image" class="img-fluid mb-3" data-bs-toggle="modal" data-bs-target="#imageModal" />
+            <a id="download-link" href="#" download="result_image.jpg" class="btn btn-primary">
+                <i class="bi bi-download"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal for zooming the image -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="modal-image" alt="Zoomed Image" />
+                </div>
+                <div class="modal-footer">
+                    <a id="download-link-modal" href="#" download="result_image.jpg" class="btn btn-primary">
+                        <i class="bi bi-download"></i>
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
