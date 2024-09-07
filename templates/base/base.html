@@ -1,0 +1,199 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+{% load static %}
+		<!-- main start -->
+		<main class="js-animsition-overlay" data-animsition-overlay="true">
+			<!-- home slider start -->
+			<section id="up" class="pos-rel section-bg-dark-1 js-home-slider fullscreen-slider">
+				<!-- swiper-wrapper start -->
+				<div class="swiper-wrapper">
+					<!-- swiper-slide start -->
+					<div class="swiper-slide">
+						<!-- slide-bg -->
+                        {% load static %}
+						<div class="js-parallax-slide-bg bg-img-cover" style="background-image:url({% static 'assets/images/img/sliders/slide1.png' %})"></div>
+						<!-- bg-overlay -->
+						<div class="bg-overlay-black"></div>
+
+						<!-- content start -->
+						<div class="flex-min-height-100vh pos-rel" data-swiper-parallax-x="30%">
+							<div class="container small padding-top-bottom-120">
+								<h2 class="headline-xl">
+									<span class="hidden-box d-block">
+										<span class="anim-slide tr-delay-02">LAYENE DIGITAL</span>
+									</span>
+									<span class="hidden-box d-block">
+										<span class="anim-slide tr-delay-03">LE PORTAIL DIGITAL</span>
+									</span>
+								</h2>
+								<div class="margin-top-30 anim-fade tr-delay-08">
+									</a>
+								</div>
+							</div>
+						</div><!-- content end -->
+					</div><!-- swiper-slide end -->
+
+
+				
+                </div><!-- swiper-wrapper end -->
+
+				<!-- swiper-pagination start -->
+				<div class="pagination-box fullscreen-slider-pagination after-preloader-anim">
+					<div class="anim-fade tr-delay-03">
+						<div class="swiper-pagination counter-pagination"></div>
+					</div>
+				</div><!-- swiper-pagination end -->
+			</section><!-- home slider end -->
+
+			<!-- about us start -->
+			<section id="down" class="pos-rel section-bg-dark-2">
+				<!-- pos-rel start -->
+				<div class="pos-rel padding-top-bottom-120">
+					<!-- flex-container start -->
+					<div class="container flex-container padding-bottom-70">
+						<!-- column start -->
+						<div class="six-columns padding-bottom-20">
+							<!-- title start -->
+							<h2 class="column-l-r-margin-10 headline-m js-scrollanim">
+								<span class="hidden-box d-block">
+									<span class="anim-slide">
+										<span class="text-color-red">LAYENE DIGITAL</span>
+									</span>
+								</span>
+								<!--<span class="hidden-box d-block">
+									<span class="anim-slide tr-delay-01 text-color-red">People</span>
+								</span>-->
+							</h2><!-- title end -->
+						</div><!-- column end -->
+                        <div id="loading-container">
+                            <div id="loading" class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                            <form method="post" enctype="multipart/form-data" class="custom-form shadow" onsubmit="showLoading()">
+                                <h3 class="text-center mb-4">Image</h3>
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <input type="submit" value="Envoyer" class="btn btn-primary">
+                            </form>
+                    
+                            {% if result_image %}
+                                <script type="text/javascript">
+                                    saveToLocalStorage("data:image/jpeg;base64,{{ result_image }}");
+                                </script>
+                            {% endif %}
+                    
+                            <div id="image-container" style="display:none;">
+                                <img id="result-image" alt="Result Image" class="img-fluid mb-3" data-bs-toggle="modal" data-bs-target="#imageModal" />
+                                <a id="download-link" href="#" download="result_image.jpg" class="btn btn-primary">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                    
+                        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="imageModalLabel">File</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img id="modal-image" alt="Zoomed Image" />
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a id="download-link-modal" href="#" download="result_image.jpg" class="btn btn-primary">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+					</div><!-- flex-container end -->
+					<!-- js-infinite-slider start -->
+					<div class="js-infinite-slider about-slider hidden-box">
+						<!-- swiper-wrapper start -->
+						<div class="swiper-wrapper">
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/camberene-11.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/ngor-7.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/camberene-14.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/camberene-15.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-27.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/ngor-1.jpg' %}" alt="About us">
+
+							</div><!-- swiper-slide end -->
+
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-28.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-29.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/ngor-5.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/ngor-6.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-2.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-3.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-4.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-33.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-5.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-6.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-7.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-34.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-8.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-9.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-10.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-16.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/camberene-9.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/camberene-16.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+						</div><!-- swiper-wrapper end -->
+					</div><!-- js-infinite-slider end -->
+				</div><!-- pos-rel end -->
+			</section><!-- about us end -->
+					<!-- clients start -->
+
+		</main><!-- main end -->
+
+{% endblock %}

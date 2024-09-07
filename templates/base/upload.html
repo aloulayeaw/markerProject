@@ -1,8 +1,31 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Layene digital">
+    <meta name="description" content="Layene digital">
+    <meta name="keywords" content="creative, modern, clean, html5, css3, portfolio, blog, agency, templates, minimal">
+
+    <!-- favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/slide/logo/logo-ld.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'assets/images/slide/logo/logo-ld.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static 'assets/images/slide/logo/logo-ld.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static 'assets/images/slide/logo/logo-ld.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+
+    <!-- fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
+
+    <!-- styles -->
+    <link href="{% static 'assets/css/plugins.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet" type="text/css">
+
     <title>Image Overlay</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,65 +42,79 @@
             cursor: pointer;  /* Indicate that the image is clickable */
         }
 
-        /* Additional styling for the form and container */
         .custom-form {
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #dee2e6;
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            margin: 50px auto;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-form h3 {
+            font-weight: 600;
+            color: #0b564a;
+        }
+
+        .custom-form input[type="file"] {
+            border: 1px solid #ced4da;
+            padding: 10px;
             border-radius: 8px;
-            background-color: #f8f9fa;
+            width: 100%;
+            margin-bottom: 15px;
         }
 
         .custom-form input[type="submit"] {
+            background-color: #0b564a;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
             width: 100%;
+            font-weight: 500;
+            cursor: pointer;
         }
 
-        /* Style the loading spinner container */
+        .custom-form input[type="submit"]:hover {
+            background-color: #09463f;
+        }
+
         #loading-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            z-index: 1000;
-            text-align: center;
-            padding: 10px;
             display: none;
-        }
-
-        #loading {
-            display: inline-block;
-        }
-
-        #image-container {
             text-align: center;
             margin-top: 20px;
         }
 
+        #image-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
         #download-link {
             margin-top: 10px;
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #0b564a;
             color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
             text-decoration: none;
-            border-radius: 4px;
         }
 
         #download-link:hover {
-            background-color: #0056b3;
-            color: #fff;
+            background-color: #09463f;
         }
 
-        /* Modal styling */
-        .modal-content img {
-            width: 100%;
-            height: auto;
+        /* Ajout de z-index pour que le modal soit visible au-dessus du contenu */
+        .modal {
+            z-index: 1055 !important;
         }
+
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
+
     </style>
 
-    <script type="text/javascript">
+    <script>
         function showLoading() {
             document.getElementById('loading-container').style.display = 'block';
         }
@@ -86,72 +123,368 @@
             localStorage.setItem('resultImage', base64Image);
         }
 
-        function loadFromLocalStorage() {
-            const savedImage = localStorage.getItem('resultImage');
-            if (savedImage) {
-                document.getElementById('result-image').src = savedImage;
-                document.getElementById('modal-image').src = savedImage;
-                document.getElementById('download-link-modal').href = savedImage;
-                document.getElementById('download-link').href = savedImage;
-                document.getElementById('image-container').style.display = 'block';
-            }
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('image-form').addEventListener('submit', function (event) {
+                event.preventDefault(); 
 
-        window.onload = loadFromLocalStorage;
+                showLoading();
+
+                const formData = new FormData(this);
+
+                fetch("{% url 'overlay_photos' %}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            console.error('Error response text:', text); 
+                            throw new Error('Server returned an error: ' + response.status);
+                        });
+                    }
+                    return response.json();  
+                })
+                .then(data => {
+                    document.getElementById('loading-container').style.display = 'none';  
+
+                    if (data.success) {
+                        const resultImage = "data:image/jpeg;base64," + data.result_image;
+                        document.getElementById('result-image').src = resultImage;
+                        document.getElementById('modal-image').src = resultImage;
+                        document.getElementById('download-link').href = resultImage;
+                        document.getElementById('download-link-modal').href = resultImage;
+                        document.getElementById('image-container').style.display = 'block';
+
+                        saveToLocalStorage(resultImage);
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred: ' + error.message);
+                });
+            });
+        });
     </script>
 </head>
-<body class="bg-light">
 
-    <div id="loading-container">
-        <div id="loading" class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
+<body class="">
+		<!-- header start -->
+		<header class="fixed-header">
+			<!-- logo start -->
+			<div class="header-logo js-midnight-color js-headroom">
+				<div class="hidden-box">
+					<a href="{% url 'overlay_photos' %}" class="header-logo__box js-pointer-large js-animsition-link">
+						<img class="header-logo__img white" src="{% static 'assets/images/slide/logo/logo-1.png' %}" alt="logo">
+						<img class="header-logo__img black" src="{% static 'assets/images/slide/logo/logo-1.png' %}" alt="logo">
+					</a>
+				</div>
+			</div><!-- logo end -->
 
-    <div class="container">
-        <form method="post" enctype="multipart/form-data" class="custom-form shadow" onsubmit="showLoading()">
-            <h3 class="text-center mb-4">Image</h3>
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Envoyer" class="btn btn-primary">
-        </form>
+			<!-- menu-icon start -->
+			{% comment %} <div class="menu-icon js-menu-open-close js-pointer-large js-midnight-color js-headroom">
+				<div class="menu-icon__box">
+					<span class="menu-icon__inner"></span>
+					<span class="menu-icon__close"></span>
+				</div>
+			</div><!-- menu-icon end --> {% endcomment %}
 
-        {% if result_image %}
-            <script type="text/javascript">
-                saveToLocalStorage("data:image/jpeg;base64,{{ result_image }}");
-            </script>
-        {% endif %}
+			<!-- header-contact start -->
+			<div class="header-contact js-midnight-color js-headroom">
+				<div class="header-contact__flex">
+					<div class="header-contact__anim">
+					</div>
+				</div>
+			</div><!-- header-contact end -->
 
-        <div id="image-container" style="display:none;">
-            <img id="result-image" alt="Result Image" class="img-fluid mb-3" data-bs-toggle="modal" data-bs-target="#imageModal" />
-            <a id="download-link" href="#" download="result_image.jpg" class="btn btn-primary">
-                <i class="bi bi-download"></i>
-            </a>
-        </div>
-    </div>
+			<!-- header-social start -->
+			<div class="header-social after-preloader-anim js-midnight-color js-headroom">
+				<ul class="list list_center list_margin-20px hidden-box">
+					<li class="list__item">
+						<div class="hidden-box d-inline-block">
+							<a href="#" class="anim-slide js-pointer-small">
+								<i class="fab fa-facebook-f"></i>
+							</a>
+						</div>
+					</li>
+					<li class="list__item">
+						<div class="hidden-box d-inline-block">
+							<a href="#" class="anim-slide tr-delay-02 js-pointer-small">
+								<i class="fab fa-twitter"></i>
+							</a>
+						</div>
+					</li>
+					<li class="list__item">
+						<div class="hidden-box d-inline-block">
+							<a href="#" class="anim-slide tr-delay-04 js-pointer-small">
+								<i class="fab fa-instagram"></i>
+							</a>
+						</div>
+					</li>
+					<li class="list__item">
+						<div class="hidden-box d-inline-block">
+							<a href="#" class="anim-slide tr-delay-10 js-pointer-small">
+								<i class="fab fa-youtube"></i>
+							</a>
+						</div>
+					</li>
+				</ul>
+			</div><!-- header-social end -->
+		</header><!-- header end -->
 
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">File</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+    <main class="js-animsition-overlay" data-animsition-overlay="true">
+        <!-- home slider start -->
+        <section id="up" class="pos-rel section-bg-dark-1 js-home-slider fullscreen-slider">
+            <!-- swiper-wrapper start -->
+            <div class="swiper-wrapper">
+                <!-- swiper-slide start -->
+                <div class="swiper-slide">
+                    <!-- slide-bg -->
+                    {% load static %}
+                    <div class="js-parallax-slide-bg bg-img-cover" style="background-image:url({% static 'assets/images/slide/1.jpg' %})"></div>
+                    <!-- bg-overlay -->
+                    <div class="bg-overlay-black"></div>
+
+                    <!-- content start -->
+                    <div class="flex-min-height-100vh pos-re" data-swiper-parallax-x="20%">
+                        <div class="container small padding-top-bottom-120">
+                            <h2 class="headline-xl">
+                                <span class="hidden-box d-block">
+                                    <span class="anim-slide tr-delay-02" style="color: white;">GAMOU YOFF</span>
+                                </span>
+                                <span class="hidden-box d-block">
+                                    <span class="anim-slide tr-delay-03" style="color: white;">#2024</span>
+                                </span>
+                            </h2>
+                            <div class="margin-top-30 anim-fade tr-delay-08">
+                                </a>
+                            </div>
+                        </div>
+                    </div><!-- content end -->
+                </div><!-- swiper-slide end -->
+
+
+            
+            </div><!-- swiper-wrapper end -->
+
+        </section><!-- home slider end -->
+
+        <!-- about us start -->
+        <section id="down" class="section-bg-dark-2"  style="margin-top: -50px;">
+            <!-- pos-rel start -->
+            <br><br><br>
+    
+            <div class="container">
+                <form method="post" id="image-form" enctype="multipart/form-data" class="custom-form shadow section-bg-dark-2" onsubmit="showLoading()">
+                    <h3 class="text-center mb-4">Téléverser votre Image</h3>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Envoyer" class="btn border-btn js-pointer-large">
+                </form>
+            
+                <div id="loading-container">
+                    <div id="loading" class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <img id="modal-image" alt="Zoomed Image" />
-                </div>
-                <div class="modal-footer">
-                    <a id="download-link-modal" href="#" download="result_image.jpg" class="btn btn-primary">
+            
+                {% if result_image %}
+                    <script type="text/javascript">
+                        saveToLocalStorage("data:image/jpeg;base64,{{ result_image }}");
+                    </script>
+                {% endif %}
+            
+                <div id="image-container" style="display:none;">
+                    <img id="result-image" alt="Image" class="img-fluid mb-3" data-bs-toggle="modale" data-bs-target="#imageModale" />
+                    <a id="download-link" href="#" download="result_image.jpg" class="btn btn-primary">
                         <i class="bi bi-download"></i>
                     </a>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
                 </div>
             </div>
-        </div>
-    </div>
+    
+            <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="imageModalLabel">Image Zoomée</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <img id="modal-image" alt="Zoomed Image" class="img-fluid" />
+                        </div>
+                        <div class="modal-footer">
+                            <a id="download-link-modal" href="#" download="result_image.jpg" class="btn btn-primary">
+                                <i class="bi bi-download"></i> Télécharger
+                            </a>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="bi bi-x-lg"></i> Fermer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Handle form submission
+                    document.getElementById('image-form').addEventListener('submit', function (event) {
+                        event.preventDefault();  // Prevent form submission
+                        
+                        // Simulating image processing
+                        const resultImage = "data:image/jpeg;base64,<base64string>";
+                        
+                        // Show the result image
+                        document.getElementById('result-image').src = resultImage;
+                        document.getElementById('modal-image').src = resultImage;
+                        document.getElementById('download-link').href = resultImage;
+                        document.getElementById('download-link-modal').href = resultImage;
+                        document.getElementById('image-container').style.display = 'block';
+                    });
+                });
+            </script>
+            
+
+            {% comment %} <script>
+                document.getElementById('image-form').addEventListener('submit', function(event) {
+                    event.preventDefault();  // Empêche le rechargement de la page
+                
+                    showLoading();  // Affiche le spinner de chargement
+                
+                    const formData = new FormData(this);
+                
+                    // Envoie les données du formulaire via AJAX
+                    fetch("{% url 'overlay_photos' %}", {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('loading-container').style.display = 'none'; // Cache le spinner
+                
+                        if (data.success) {
+                            // Affiche l'image si elle est retournée par le serveur
+                            const resultImage = "data:image/jpeg;base64," + data.result_image;
+                            document.getElementById('result-image').src = resultImage;
+                            document.getElementById('modal-image').src = resultImage;
+                            document.getElementById('download-link').href = resultImage;
+                            document.getElementById('download-link-modal').href = resultImage;
+                            document.getElementById('image-container').style.display = 'block';
+                            
+                            // Sauvegarde l'image dans le localStorage
+                            saveToLocalStorage(resultImage);
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while uploading the image.');
+                    });
+                });
+            </script> {% endcomment %}
+
+                
+
+            <div class="pos-rel padding-top-bottom-120">
+                <!-- flex-container start -->
+                <div class="container flex-container padding-bottom-70">
+                    <!-- column start -->
+                    
+                </div><!-- flex-container end -->
+                <!-- js-infinite-slider start -->
+                <div class="js-infinite-slider about-slider hidden-box">
+                    <!-- swiper-wrapper start -->
+                    <div class="swiper-wrapper">
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/camberene-11.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/ngor-7.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/camberene-14.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/camberene-15.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/Yoff-27.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/ngor-1.jpg' %}" alt="About us">
+
+                        </div><!-- swiper-slide end -->
+
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/Yoff-28.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-29.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/ngor-5.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/ngor-6.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/Yoff-2.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-3.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/Yoff-4.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-33.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/Yoff-5.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-6.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/Yoff-7.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-34.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/Yoff-8.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-9.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+
+                        <!-- swiper-slide start -->
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/Yoff-10.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-16.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+
+                        <div class="swiper-slide">
+                            <img src="{% static 'assets/images/img/gallery/camberene-9.jpg' %}" alt="About us">
+                            <img class="padding-top-20" src="{% static 'assets/images/img/gallery/camberene-16.jpg' %}" alt="About us">
+                        </div><!-- swiper-slide end -->
+                    </div><!-- swiper-wrapper end -->
+                </div><!-- js-infinite-slider end -->
+            </div><!-- pos-rel end -->
+            <p style="color: white; text-align: center; margin-top: -20px;">Gamou #2024</p>
+        </section><!-- about us end -->
+                <!-- clients start -->
+    </main><!-- main end -->
+
+    <script src="{% static 'assets/js/plugins.js'%}"></script>
+	<script src="{% static 'assets/js/footer-reveal.js'%}"></script>
+	<script src="{% static 'assets/js/main.js'%}"></script>
+	<script src="{% static 'assets/js/footer-reveal_init.js'%}"></script>	
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>

@@ -2,969 +2,376 @@
 <!DOCTYPE html>
 <html lang="fr">
 
-
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Layene digital">
+		<meta name="description" content="Layene digital">
+		<meta name="keywords" content="creative, modern, clean, html5, css3, portfolio, blog, agency, templates, minimal">
 
-    <title>Fondation Imaam Saxiir Gaye</title>
+		<!-- favicon -->
+		<link rel="shortcut icon" href="{% static 'assets/images/slide/logo/logo-ld.png' %}">
+		<link rel="apple-touch-icon" href="{% static 'assets/images/slide/logo/logo-ld.png' %}">
+		<link rel="apple-touch-icon" sizes="72x72" href="{% static 'assets/images/slide/logo/logo-ld.png' %}">
+		<link rel="apple-touch-icon" sizes="114x114" href="{% static 'assets/images/slide/logo/logo-ld.png' %}">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+		<!-- Bootstrap Icons -->
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+	
+		<title>LAYENE DIGITAL</title>
 
-    <!--== Favicon ==-->
-    <link rel="shortcut icon" href="{% static 'assets/img/logo_imaam.PNG' %}" type="image/x-icon" />
+		<!-- fonts -->
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet">
 
-    <!--== Google Fonts ==-->
-    <link href="https://fonts.googleapis.com/css?family=Yeseva+One:400" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,500i,700,700i" rel="stylesheet">
+		<!-- styles -->
+		<link href="{% static 'assets/css/plugins.css' %}" rel="stylesheet" type="text/css">
+		<link href="{% static 'assets/css/style.css' %}" rel="stylesheet" type="text/css">
+		
+		<style>
+			/* Define the size for the image */
+			#result-image {
+				max-width: 100%;  /* Scale the image to fit within its container */
+				height: auto;  /* Maintain the aspect ratio */
+				max-width: 300px;  /* Optional: Set a maximum width */
+				border-radius: 8px;  /* Optional: Rounded corners for the image */
+				cursor: pointer;  /* Indicate that the image is clickable */
+			}
+	
+			/* Additional styling for the form and container */
+			.custom-form {
+				max-width: 500px;
+				margin: 20px auto;
+				padding: 20px;
+				border: 1px solid #dee2e6;
+				border-radius: 8px;
+				background-color: #f8f9fa;
+			}
+	
+			.custom-form input[type="submit"] {
+				width: 100%;
+			}
+	
+			/* Style the loading spinner container */
+			#loading-container {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				background-color: rgba(255, 255, 255, 0.8);
+				z-index: 1000;
+				text-align: center;
+				padding: 10px;
+				display: none;
+			}
+	
+			#loading {
+				display: inline-block;
+			}
+	
+			#image-container {
+				text-align: center;
+				margin-top: 20px;
+			}
+	
+			#download-link {
+				margin-top: 10px;
+				display: inline-block;
+				padding: 10px 20px;
+				background-color: #007bff;
+				color: #fff;
+				text-decoration: none;
+				border-radius: 4px;
+			}
+	
+			#download-link:hover {
+				background-color: #0056b3;
+				color: #fff;
+			}
+	
+			/* Modal styling */
+			.modal-content img {
+				width: 100%;
+				height: auto;
+			}
+		</style>
+	
+		<script type="text/javascript">
+			function showLoading() {
+				document.getElementById('loading-container').style.display = 'block';
+			}
+	
+			function saveToLocalStorage(base64Image) {
+				localStorage.setItem('resultImage', base64Image);
+			}
+	
+			function loadFromLocalStorage() {
+				const savedImage = localStorage.getItem('resultImage');
+				if (savedImage) {
+					document.getElementById('result-image').src = savedImage;
+					document.getElementById('modal-image').src = savedImage;
+					document.getElementById('download-link-modal').href = savedImage;
+					document.getElementById('download-link').href = savedImage;
+					document.getElementById('image-container').style.display = 'block';
+				}
+			}
+	
+			window.onload = loadFromLocalStorage;
+		</script>
+	</head>
+<body class="preloader cursor-anim-enable dark-nav">
+		
+		{% comment %} <!-- preloader-loading start -->
+		<div class="preloader__logoload-box">
+			<img class="preloader__logo" src="{% static 'assets/images/slide/logo/logo-ld.png' %}" alt="logo">
+			<div class="preloader__pulse"></div>
+		</div><!-- preloader-loading end --> {% endcomment %}
 
-    <!--== Bootstrap CSS ==-->
-    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
-    <!--== Icofont CSS ==-->
-    <link href="{% static 'assets/css/icofont.css' %}" rel="stylesheet"/>
-    <!--== ElegantIcons CSS ==-->
-    <link href="{% static 'assets/css/elegantIcons.css' %}" rel="stylesheet"/>
-    <!--== Animate CSS ==-->
-    <link href="{% static 'assets/css/animate.css' %}" rel="stylesheet"/>
-    <!--== Aos CSS ==-->
-    <link href="{% static 'assets/css/aos.css' %}" rel="stylesheet"/>
-    <!--== FancyBox CSS ==-->
-    <link href="{% static 'assets/css/jquery.fancybox.min.css' %}" rel="stylesheet"/>
-    <!--== Slicknav CSS ==-->
-    <link href="{% static 'assets/css/slicknav.css' %}" rel="stylesheet"/>
-    <!--== Swiper CSS ==-->
-    <link href="{% static 'assets/css/swiper.min.css' %}" rel="stylesheet"/>
-    <!--== Main Style CSS ==-->
-    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet" />
-    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+		<!-- pointer start -->
+		<div class="pointer js-pointer" id="js-pointer">
+			<i class="pointer__inner fas fa-long-arrow-alt-right"></i>
+			<i class="pointer__inner fas fa-search"></i>
+			<i class="pointer__inner fas fa-link"></i>
+		</div><!-- pointer end -->
 
-</head>
+		<!-- to top btn start -->
+		<a href="#up" class="scroll-to-btn js-headroom js-midnight-color js-smooth-scroll js-pointer-large">
+			<span class="scroll-to-btn__box">
+				<span class="scroll-to-btn__arrow"></span>
+			</span>
+		</a><!-- to top btn end -->
 
-<body>
+		<!-- scroll down btn start -->
+		<a href="#down" class="scroll-to-btn to-down js-headroom js-midnight-color js-smooth-scroll js-pointer-large js-scroll-btn">
+			<span class="scroll-to-btn__box">
+				<span class="scroll-to-btn__arrow"></span>
+			</span>
+		</a><!-- scroll down btn end -->
 
-<!--wrapper start-->
-<div class="wrapper home-default-wrapper">
+		<!-- header start -->
+		<header class="fixed-header">
+			<!-- logo start -->
+			<div class="header-logo js-midnight-color js-headroom">
+				<div class="hidden-box">
+					<a href="{% url 'overlay_photos' %}" class="header-logo__box js-pointer-large js-animsition-link">
+						<img class="header-logo__img white" src="{% static 'assets/images/slide/logo/logo-1.png' %}" alt="logo">
+						<img class="header-logo__img black" src="{% static 'assets/images/slide/logo/logo-1.png' %}" alt="logo">
+					</a>
+				</div>
+			</div><!-- logo end -->
 
-  <!--== Start Preloader Content ==-->
-  <div class="preloader-wrap">
-    <div class="preloader">
-      <span class="dot"></span>
-      <div class="dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-  </div>
-  <!--== End Preloader Content ==-->
+			<!-- menu-icon start -->
+			<div class="menu-icon js-menu-open-close js-pointer-large js-midnight-color js-headroom">
+				<div class="menu-icon__box">
+					<span class="menu-icon__inner"></span>
+					<span class="menu-icon__close"></span>
+				</div>
+			</div><!-- menu-icon end -->
 
-  <!--== Start Header Wrapper ==-->
-  <header class="header-area header-default sticky-header">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-5 col-sm-3 col-md-3 col-lg-2 pr-0">
-          <div class="header-logo-area">
-            <a href="index.html">
-              <img class="logo-main" src="{% static 'assets/img/logo_imaam.PNG' %}" style="height: 100px; 85px;" alt="Logo" />
-              <img class="logo-light" src="{% static 'assets/img/logo_imaam.PNG' %}" style="height: 100px; 85px;" alt="Logo" />
-            </a>
-          </div>
-        </div>
-        <div class="col-7 col-sm-9 col-md-9 col-lg-10">
-          <div class="header-align">
-            <div class="header-navigation-area">
-              <ul class="main-menu nav justify-content-center">
-                <li class=""><a href="{% url "home" %}" style="color:black;">Accueil</a></li>
-                <li><a href="#section-about" style="color:black;">Le Parrain</a></li>
-                <li><a href="#section-mission" style="color:black;">La Mission</a></li>
-                <li><a href="#section-objectifs" style="color:black;">Les Objectifs</a></li>
-                <li><a href="#section-activite" style="color:black;">Activités</a></li>
-                <li><a href="#section-event" style="color:black;">Evenement</a></li>
-                <li><a href="#section-contact" style="color:black;">Contact</a></li>
-              </ul>
-            </div>
-            <div class="header-action-area">
-              <button class="btn-menu d-xl-none">
-                <span></span>
-                <span></span>
-                <span></span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-  <!--== End Header Wrapper ==-->
-  
-  <main class="main-content">
-    <!--== Start Hero Area Wrapper ==-->
-    <section class="home-slider-area slider-default">
-      <div class="home-slider-content">
-        <!-- Start Slide Item -->
-        <div class="home-slider-item">
-          <div class="slider-content-area">
-            <div class="container">
-              <div class="row">
-                <div class="col-md-6 col-lg-6 col-xl-7">
-                  <div class="content" data-aos="fade-right" data-aos-duration="1000">
-                    <div class="subtitle-content">
-                      {% comment %} <img src="{% static 'assets/img/icons/1.png' %}" alt="Givest-HasTech"> {% endcomment %}
-                      <h6 style="font-size: 30px;">Imam Mouhamadou Sakhir Gaye</h6>
-                    </div>
-                    <div class="tittle-wrp">
-                        <br>
-                      <h2 style="">1925-2001
-                        <br>
-                        <span>76 ans</span> Au service de l’humanité.</h2>
-                    </div>
-                    <div class="btn-wrp">
-                      <a href="#section-contact" class="btn-theme btn-border btn-black btn-style">Contribution <img class="icon icon-img" src="{% static 'assets/img/icons/arrow-right-line-dark.png' %}" alt="Icon"></a>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-5 offset-md-1 col-lg-5 offset-lg-1 col-xl-5 offset-xl-0">
-                  <div class="layer-style">
-                    <div class="thumb scene">
-                      <span class="scene-layer" data-depth="0.20">                     
-                        <img class="" src="{% static 'assets/img/image/slide.png' %}" style="height: 680px; width: 620px;" alt="Image-Givest">
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            </div>
-          </div>
-        </div>
-        <!-- End Slide Item -->
-      </div>
-    </section>
-    <!--== End Hero Area Wrapper ==-->
+			<!-- header-contact start -->
+			<div class="header-contact js-midnight-color js-headroom">
+				<div class="header-contact__flex">
+					<div class="header-contact__anim">
+					</div>
+				</div>
+			</div><!-- header-contact end -->
 
-<br><br><br><br>
-    <!--== Start About Area ==-->
-    <section class="about-area about-default-area" id="section-about">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-9">
-            <div class="section-title position-relative z-index-1" data-aos="fade-up" data-aos-duration="1000">
-              <h5 class="subtitle line-theme-color">Le Parrain</h5>
-              <h2 class="title"><span>Le Parrain</span></h2>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-5 col-xl-5">
-            <div class="layer-style" data-aos="fade-up" data-aos-duration="1100">
-              <div class="thumb">
-                <div class="row m-0">
-                  <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 p-0 d-none d-sm-block d-lg-none d-xl-block tilt-animation">
-                  </div>
-                  <div class="col-sm-8 col-md-8 col-lg-12 col-xl-8 p-0 tilt-animation">
-                    <img class="img-two" src="{% static 'assets/img/Image6.png' %}" style="height:500px; width: 700px;" alt="Image-Givest">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-7 col-xl-7">
-            <div class="about-content" data-aos="fade-up" data-aos-duration="1100">
-              <p class="text-style" style="text-align: justify">Imam Mouhamadou Sakhir a consacré sa vie entière à la quête du savoir,</p>
-              <p style="text-align: justify;color: black;font-size: 19px;"> <span style="text-transform: uppercase;">à</span> l’éducation , à l’enseignement et au travail pour contribuer positivement à l’épanouissement de l’Homme paré de ses plus nobles vertus de patience, de bonté, de tendresse, d'honnêteté,  de miséricorde, de fidélité, de pudeur, de  générosité, la modestie, de courage, de  justice, de bienfaisance, de douceur, d'abnégation, entre autres…
-                    <br>
-                    Ce serviteur accompli, a contribué durablement au renforcement des valeurs humanistes nourries à la sève exaltante de la de la paix et de la bonne entente sociale. L’Erudition qui le caractérisait telle une effluve débordante aux senteurs de la gnose principielle du Tawhid, ne l’ont pas empêché d’ être un pédagogue aguerri doublé d’un didacticien reconnu au delà nos communautés.
-                    <br>
-                    Sa grande piété visible d’un simple œil clignotant a été anoblie par sa pratique constante et rigoureuse du devoir religieux dont l’élévation spirituelle et la sublimation cognitive de ses contemporains constituaient la pièce motrice de son projet de vie. 
-                    <br>
-                    Au crépuscule de sa vie, une communauté d’hommes et de femmes solidement ancrée aux principes humanistes de de l’Islam ralluma le flambeau transcendé, perfectionné et élevé au plus haut degré de l'honneur, de la dignité et de la proximité d'Allah SWT.
-                    <br>
-                </p>
-              <a href="#section-activite" class="btn-theme btn-gradient btn-slide">Activités <img class="icon icon-img" src="{% static 'assets/img/icons/arrow-line-right2.png' %}" alt="Icon"></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!--== End About Area ==-->
-    <!--== Start Service Area ==-->
-    <section class="service-area service-default-area" id="section-vision">
-        <div class="container">
-          <div class="col-lg-9">
-          <div class="section-title position-relative z-index-1" data-aos="fade-up" data-aos-duration="1000">
-              <h5 class="subtitle line-theme-color">La Vision</h5>
-              <h2 class="title"><span>La Vision</span></h2>
-          </div>
-          </div>
-          <div class="row icon-box-style1" data-aos="fade-up" data-aos-duration="1000">
-            <div class="col-md-12 col-lg-12">
-              <div class="icon-box-item item-one mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <img class="icon-img" src="{% static 'assets/img/image/logo-2.png' %}" style="height: 80px; width: -40px;border-radius: 50px;" alt="Icon">
-                  </div>
-                  <h4 class="title">ASSURER UNE VIE DÉCENTE POUR TOUS DANS UNE SOCIÉTÉ DES VALEURS</h4>
-                  {% comment %} <h4 class="title">Assurer une vie décente pour tous dans une société des valeurs</h4> {% endcomment %}
-                </div>
-              </div>
-            </div>
+			<!-- header-social start -->
+			<div class="header-social after-preloader-anim js-midnight-color js-headroom">
+				<ul class="list list_center list_margin-20px hidden-box">
+					<li class="list__item">
+						<div class="hidden-box d-inline-block">
+							<a href="#" class="anim-slide js-pointer-small">
+								<i class="fab fa-facebook-f"></i>
+							</a>
+						</div>
+					</li>
+					<li class="list__item">
+						<div class="hidden-box d-inline-block">
+							<a href="#" class="anim-slide tr-delay-02 js-pointer-small">
+								<i class="fab fa-twitter"></i>
+							</a>
+						</div>
+					</li>
+					<li class="list__item">
+						<div class="hidden-box d-inline-block">
+							<a href="#" class="anim-slide tr-delay-04 js-pointer-small">
+								<i class="fab fa-instagram"></i>
+							</a>
+						</div>
+					</li>
+					<li class="list__item">
+						<div class="hidden-box d-inline-block">
+							<a href="#" class="anim-slide tr-delay-10 js-pointer-small">
+								<i class="fab fa-youtube"></i>
+							</a>
+						</div>
+					</li>
+				</ul>
+			</div><!-- header-social end -->
+		</header><!-- header end -->
 
-          </div>
-        </div>
-      </section>
-      <!--== End Service Area ==-->
-
-      <section class="service-area service-default-area" id="section-mission">
-        <div class="container">
-          <div class="col-lg-9">
-          <div class="section-title position-relative z-index-1" data-aos="fade-up" data-aos-duration="1000">
-              <h5 class="subtitle line-theme-color">La Mission</h5>
-              <h2 class="title"><span>La Mission</span></h2>
-          </div>
-          </div>
-          <div class="row icon-box-style1" data-aos="fade-up" data-aos-duration="1000">
-            <div class="col-md-4 col-lg-4">
-              <div class="icon-box-item item-two mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <img class="icon-img" src="{% static 'assets/img/image/logo-2.png' %}" style="height: 80px; width: -40px;border-radius: 50px;"alt="Icon">
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Préserver les nobles valeurs religieuses et de la bonne tradition </h4>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 col-lg-4">
-              <div class="icon-box-item item-two mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <img class="icon-img" src="{% static 'assets/img/image/logo-2.png' %}" style="height: 80px; width: -40px;border-radius: 50px;" alt="Icon">
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Améliorer les conditions de vie des populations</h4>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 col-lg-4">
-              <div class="icon-box-item item-two">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <img class="icon-img" src="{% static 'assets/img/image/logo-2.png' %}" style="height: 80px; width: -40px;border-radius: 50px;" alt="Icon">
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Promouvoir l’éducation et l’emploi</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!--== End Service Area ==-->
-
-    <!--== Start Service Area ==-->
-    <section class="service-area service-default-area" id="section-objectifs">
-        <div class="container">
-          <div class="col-lg-9">
-          <div class="section-title position-relative z-index-1" data-aos="fade-up" data-aos-duration="1000">
-              <h5 class="subtitle line-theme-color">Nos Objectifs</h5>
-              <h2 class="title"><span>Nos Objectifs</span></h2>
-          </div>
-          </div>
-          <div class="row icon-box-style1" data-aos="fade-up" data-aos-duration="1000">
-            <div class="col-md-6 col-lg-6">
-              <div class="icon-box-item item-three mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <h3 class="icon-img" style="font-size: 43px;">1</h3>
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Consolider et développer l’œuvre de Imam Mamadou Sakhir Gaye</h4>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 col-lg-6">
-              <div class="icon-box-item item-three mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <h3 class="icon-img" style="font-size: 43px;">2</h3>
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Faciliter l’accès à une éducation de qualité pour toutes les couches de la population et améliorer les conditions d’apprentissage dans les Daaras, écoles et universités</h4>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 col-lg-6">
-              <div class="icon-box-item item-three mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <h3 class="icon-img" style="font-size: 43px;">3</h3>
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Lutter contre la déperdition scolaire et promouvoir les langues nationales</h4>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 col-lg-6">
-              <div class="icon-box-item item-three mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <h3 class="icon-img" style="font-size: 43px;">4</h3>
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Combattre la pauvreté afin de garantir une vie décente à tous</h4>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 col-lg-6">
-              <div class="icon-box-item item-one mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <h3 class="icon-img" style="font-size: 43px;">5</h3>
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Promouvoir l’entreprenariat et l’insertion des jeunes diplômés notamment les arabophones</h4>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 col-lg-6">
-              <div class="icon-box-item item-three mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <h3 class="icon-img" style="font-size: 43px;">6</h3>
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Renforcer la capacité des femmes et des jeunes pour améliorer le mieux-vivre</h4>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 col-lg-6">
-              <div class="icon-box-item item-three mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <h3 class="icon-img" style="font-size: 43px;">7</h3>
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Promouvoir le vivre ensemble et les valeurs islamiques pour renforcer la paix sociale</h4>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6 col-lg-6">
-              <div class="icon-box-item item-three mb-md-30">
-                <div class="icon-box-top">
-                  <div class="icon-box">
-                    <h3 class="icon-img" style="font-size: 43px;">8</h3>
-                  </div>
-                  <h4 class="title" style="font-size: 15px;">Promouvoir le bien-être et améliorer l’accès aux soins de santé pour tous</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        </div>
-    </section>
-      <!--== End Service Area ==-->
+          {% include 'includes/navbar.html' %}
 
 
-    <!--== Start Causes Area ==-->
-    <section class="causes-area causes-default-area" id="section-activite">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 m-auto">
-            <div class="section-title text-center" data-aos="fade-up" data-aos-duration="1000">
-              <h5 class="subtitle line-theme-color">Domaines d'Interventions</h5>
-              <h2 class="title title-style">Domaines d'Interventions</h2>
-            </div>
-          </div>
-        </div>
-        <div class="row" data-aos="fade-up" data-aos-duration="1000">
-          <div class="col-md-4 col-lg-3">
-            <div class="causes-item mb-md-30">
-              <div class="thumb">
-                <img src="{% static 'assets/img/Image2.png' %}" alt="Givest-HasTech">
-              </div>
-              <div class="content" style="height: 100px;">
-                <h4 class="title" style="font-size: 20px;">CULTURE & RELIGION</h4>
-              </div>
-              <br>
-            </div>
-          </div>
-          <div class="col-md-4 col-lg-3">
-            <div class="causes-item mb-md-30">
-              <div class="thumb">
-                <img src="{% static 'assets/img/Image3.png' %}" alt="Givest-HasTech">
-              </div>
-              <div class="content" style="height: 100px;">
-                <h4 class="title" style="font-size: 19px;">EDUCATION, FORMATION, EMPLOI</h4>
-              </div>
-              <br>
-              
-            </div>
-          </div>
-          <div class="col-md-4 col-lg-3">
-            <div class="causes-item">
-              <div class="thumb">
-                <img src="{% static 'assets/img/Image4.png' %}" alt="Givest-HasTech">
-              </div>
-              <div class="content" style="height: 100px;">
-                <h4 class="title" style="font-size: 20px;">SANTE & BIEN-ÊTRE</h4>
-              </div>
-              <br>
-            </div>
-          </div>
-          <div class="col-md-4 col-lg-3">
-            <div class="causes-item mb-md-30">
-              <div class="thumb">
-                <img src="{% static 'assets/img/Image5.png' %}" alt="Givest-HasTech">
-              </div>
-              <div class="content" style="height: 100px;">
-                <h4 class="title" style="font-size: 20px;">SOLIDARITÉ</h4>
-              </div>
-              <br>
-            </div>
-          </div>
-        </div>
-        <button class="btn-theme btn-gradient btn-slide" data-toggle="modal" data-target="#myModal1">Voir Plus <img class="icon icon-img" src="{% static 'assets/img/icons/arrow-line-right2.png' %}" alt="Icon"></button>
-      </div>
-    </section>
-    <!--== End Causes Area ==-->
+			<!-- home slider start -->
+			<section id="up" class="pos-rel section-bg-dark-1 js-home-slider fullscreen-slider">
+				<!-- swiper-wrapper start -->
+				<div class="swiper-wrapper">
+					<!-- swiper-slide start -->
+					<div class="swiper-slide">
+						<!-- slide-bg -->
+                        {% load static %}
+						<div class="js-parallax-slide-bg bg-img-cover" style="background-image:url({% static 'assets/images/img/sliders/slide1.png' %})"></div>
+						<!-- bg-overlay -->
+						<div class="bg-overlay-black"></div>
+
+						<!-- content start -->
+						<div class="flex-min-height-100vh pos-rel" data-swiper-parallax-x="30%">
+							<div class="container small padding-top-bottom-120">
+								<h2 class="headline-xl">
+									<span class="hidden-box d-block">
+										<span class="anim-slide tr-delay-02">LAYENE DIGITAL</span>
+									</span>
+									<span class="hidden-box d-block">
+										<span class="anim-slide tr-delay-03">LE PORTAIL DIGITAL</span>
+									</span>
+								</h2>
+								<div class="margin-top-30 anim-fade tr-delay-08">
+									</a>
+								</div>
+							</div>
+						</div><!-- content end -->
+					</div><!-- swiper-slide end -->
 
 
-    <!-- Modal 1 -->
-    <div class="modal fade" id="myModal1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Contenu du modal -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Domaines d'Interventions</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-lg-9 col-xl-12">
-                                <div class="section-title position-relative z-index-1" data-aos="fade-up" data-aos-duration="1000">
-                                    <h5 class="subtitle line-theme-color">CULTURE & RELIGION</h5>
-                                    <h2 class="title"><span>CULTURE & RELIGION</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row icon-box-style1" data-aos="fade-up" data-aos-duration="1000">
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Initiation aux sciences religieuses</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Formation des Imams et prédicateurs</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Edition et distribution des œuvres IS</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Soutien aux mosquées et Daaras</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Le Grand prix Imam Sakhir</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                        <br><br>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-lg-9 col-xl-12">
-                                <div class="section-title position-relative z-index-1" data-aos="fade-up" data-aos-duration="1000">
-                                    <h5 class="subtitle line-theme-color">EDUCATION</h5>
-                                    <h2 class="title"><span>EDUCATION</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row icon-box-style1" data-aos="fade-up" data-aos-duration="1000">
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Initiation aux sciences religieuses</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Formation des Imams et prédicateurs</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Edition et distribution des œuvres IS</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Soutien aux mosquées et Daaras</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Le Grand prix Imam Sakhir</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                        <br><br>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-lg-9 col-xl-12">
-                                <div class="section-title position-relative z-index-1" data-aos="fade-up" data-aos-duration="1000">
-                                    <h5 class="subtitle line-theme-color">FORMATION & EMPLOI</h5>
-                                    <h2 class="title"><span>FORMATION & EMPLOI</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row icon-box-style1" data-aos="fade-up" data-aos-duration="1000">
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Formation des jeunes et des femmes</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Bourses de formation</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Financement</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Formation Forums et salons pour l’emploi</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Reconversion</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                        <br><br>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-lg-9 col-xl-12">
-                                <div class="section-title position-relative z-index-1" data-aos="fade-up" data-aos-duration="1000">
-                                    <h5 class="subtitle line-theme-color">SANTÉ ET BIEN ÊTRE</h5>
-                                    <h2 class="title"><span>SANTÉ ET BIEN ÊTRE</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row icon-box-style1" data-aos="fade-up" data-aos-duration="1000">
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Consultation gratuite</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Camps gratuits de chirurgie</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Dotation des structures de santé en matériels et médicaments</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Campagne de sensibilisation</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Mutuel de santé</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                        <br><br>
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-lg-9 col-xl-12">
-                                <div class="section-title position-relative z-index-1" data-aos="fade-up" data-aos-duration="1000">
-                                    <h5 class="subtitle line-theme-color">SOLIDARITE</h5>
-                                    <h2 class="title"><span>SOLIDARITE</span></h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row icon-box-style1" data-aos="fade-up" data-aos-duration="1000">
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Aide sociale aux couches vulnérables</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two mb-md-30">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Prise en charge des orphelins</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Construction de forage</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Financement de projets</h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-lg-4 col-xl-12">
-                                <div class="icon-box-item item-two">
-                                    <div class="icon-box-top">
-                                        <h4 class="title" style="font-size: 15px;">Iftaar & Marmites solidaire</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                </div>
-            </div>
-        </div>
-    </div>
+				
+                </div><!-- swiper-wrapper end -->
 
-    <!--== Start Events Area ==-->
-    <section class="events-area events-default-area" id="section-event">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8">
-            <div class="section-title" data-aos="fade-up" data-aos-duration="1000">
-              <h5 class="subtitle line-theme-color mb-7" style="font-align: center;">Evénement</h5>
-              <h2 class="title title-style" style="font-align: center;">Activité Récente de la fondation</h2>
-            </div>
-            <div class="events-content events-list" data-aos="fade-up" data-aos-duration="1000">
-              <div class="event-item">
-                <div class="content">
-                  <div class="event-info">29 Decembre 2023  // <span>Education</span></div>
-                  <h4 class="event-name" style="font-size: 19px; text-align: justify;">Constatant que plusieurs élèves issus de famille démunis ont des difficultés pour assurer leurs inscriptions et acheter leurs fournitures, la Fondation Imam Mouhamadou Sakhir Gaye lance *une campagne de parrainage pour venir en aide à ces élèves. 
-                    Le montant par élèves est fixé à 15000F,  Vous avez la possibilité de parrainer autant d'élèves que vous voulez. <br>
-                    Un petit geste pour toucher un cœur et donner le sourire à un enfant
-                    <br>
-                    Envoyez votre contribution par Wave ou Orange money au numéro de la Fondation 785316720</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-8 offset-2 col-sm-8 offset-sm-2 col-md-8 offset-md-2 col-lg-4 offset-lg-0">
-            <div class="layer-style" data-aos="fade-left" data-aos-duration="1000">
-              <div class="thumb tilt-animation">
-                <img src="{% static 'assets/img/fondation.jpeg' %}" style="height: 600px; width: 550px;" alt="Image-Givest">
-                <div class="play-video-btn">
-                  <a class="btn-play play-video-popup wave-btn" href="https://www.youtube.com/watch?v=GbcSGVf3i44"><span></span><span></span><span></span><div class="icon"><img src="{% static 'assets/img/icons/play.png' %}" alt="Icon"></div></a>
-                </div>
-              </div>
-              <div class="shape-style1">
-                <img src="{% static 'assets/img/shape/line1.png' %}" alt="Image-Givest">
-              </div>
-              <div class="shape-style2">
-                <img src="{% static 'assets/img/shape/line2.png' %}" alt="Image-Givest">
-              </div>
-              <div class="shape-style3">
-                <img src="{% static 'assets/img/shape/line3.png' %}" alt="Image-Givest">
-              </div>
-              <div class="shape-style4">
-                <img src="{% static 'assets/img/shape/line4.png' %}" alt="Image-Givest">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!--== End Events Area ==-->
+				<!-- swiper-pagination start -->
+				<div class="pagination-box fullscreen-slider-pagination after-preloader-anim">
+					<div class="anim-fade tr-delay-03">
+						<div class="swiper-pagination counter-pagination"></div>
+					</div>
+				</div><!-- swiper-pagination end -->
+			</section><!-- home slider end -->
+
+			<!-- about us start -->
+				<!-- pos-rel start -->
 
 
-        <!--== Start Events Area ==-->
-        <section class="contact-area" id="section-contact">
-            <div class="container-fluid">
-              <div class="row justify-content-center align-items-center">
-                <div class="col-lg-12">
-                  <div class="contact-colunm">
-                    <div class="contact-form">
-                      <form class="contact-form-wrapper" id="contact-form" action="{% url "contact" %}" method="post">
-                        <div class="row">
-                          <div class="col-lg-12">
-                            <div class="section-title">
-                              <h5 class="subtitle line-theme-color">Contact</h5>
-                              <h6 class="">Pour contacter la Fondation:</h6>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-lg-12">
-                            <div class="row row-gutter-20">
-                              <div class="col-md-12">
-                                <div class="form-group">
-                                  <input class="form-control" type="text" name="con_name" placeholder="Name">
-                                </div>
-                              </div>
-                              <div class="col-md-12">
-                                <div class="form-group">
-                                  <input class="form-control" type="email" name="con_email" placeholder="Email">
-                                </div>
-                              </div>
-                              <div class="col-md-12">
-                                <div class="form-group">
-                                  <input class="form-control" type="text" name="con_phone" placeholder="Phone">
-                                </div>
-                              </div>
-                              <div class="col-md-12">
-                                <div class="form-group mb-0">
-                                  <textarea class="form-control textarea" name="con_message" placeholder="Message"></textarea>
-                                </div>
-                              </div>
-                              <div class="col-md-12">
-                                <div class="form-group mb-0">
-                                  <button class="btn-theme btn-gradient btn-slide no-border" type="submit">Envoyer</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                      <div id="message-container"></div>
-                    </div>
+ 
 
-                    <div class="form-message"></div>
-                    <div class="contact-map-area">
-                      <div class="contact-info-content">
-                        <div class="contact-info-item">
-                          <div class="icon">
-                            <img class="icon-img" src="{% static 'assets/img/icons/c1.png' %}" alt="Icon">
-                          </div>
-                          <div class="content">
-                            <h4>Téléphone</h4>
-                            <a href="tel://+00221777758765">00221 77 775 87 65</a>
-                            <a href="tel://+00221776525433">00221 77 652 54 33</a>
-                          </div>
-                        </div>
-                        <div class="contact-info-item">
-                          <div class="icon icon-mail">
-                            <img class="icon-img" src="{% static 'assets/img/icons/c2.png' %}" alt="Icon">
-                          </div>
-                          <div class="content">
-                            <h4>Email</h4>
-                            <a href="mailto://fondationimamsakhir@gmail.com">fondationimamsakhir@gmail.com</a>
-                          </div>
-                        </div>
-                        <div class="contact-info-item mb-0 pb-0">
-                          <div class="icon icon-location">
-                            <img class="icon-img" src="{% static 'assets/img/icons/c3.png' %}" alt="Icon">
-                          </div>
-                          <div class="content">
-                            <h4>Adresse</h4>
-                            <p>Yeumbeul, Dakar, Sénégal</p>
-                          </div>
-                        </div>
-                      </div>
-                      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15431.774557055258!2d-17.368447581323554!3d14.772204719321321!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xec10b0da7cf0f8d%3A0xfd85939510a5f11e!2zWWV1bWJldWwsIFPDqW7DqWdhbA!5e0!3m2!1sfr!2sfr!4v1704293277614!5m2!1sfr!2sfr" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </section>
-          <!--== End Events Area ==-->
+				<div class="pos-rel padding-top-bottom-120">
+					<!-- flex-container start -->
+					<div class="container flex-container padding-bottom-70">
+						<!-- column start -->
+						<div class="six-columns padding-bottom-20">
+							<!-- title start -->
+							<h2 class="column-l-r-margin-10 headline-m js-scrollanim">
+								<span class="hidden-box d-block">
+									<span class="anim-slide">
+										<span class="text-color-red" style="color: white">LAYENE DIGITAL</span>
+									</span>
+								</span>
+								<!--<span class="hidden-box d-block">
+									<span class="anim-slide tr-delay-01 text-color-red">People</span>
+								</span>-->
+							</h2><!-- title end -->
+						</div><!-- column end -->
+                        
+					</div><!-- flex-container end -->
+					<!-- js-infinite-slider start -->
+					<div class="js-infinite-slider about-slider hidden-box">
+						<!-- swiper-wrapper start -->
+						<div class="swiper-wrapper">
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/camberene-11.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/ngor-7.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/camberene-14.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/camberene-15.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-27.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/ngor-1.jpg' %}" alt="About us">
+
+							</div><!-- swiper-slide end -->
+
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-28.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-29.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/ngor-5.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/ngor-6.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-2.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-3.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-4.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-33.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-5.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-6.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-7.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-34.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-8.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-9.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<!-- swiper-slide start -->
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/Yoff-10.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/Yoff-16.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+
+							<div class="swiper-slide">
+								<img src="{% static 'assets/images/img/gallery/camberene-9.jpg' %}" alt="About us">
+								<img class="padding-top-20" src="{% static 'assets/images/img/gallery/camberene-16.jpg' %}" alt="About us">
+							</div><!-- swiper-slide end -->
+						</div><!-- swiper-wrapper end -->
+					</div><!-- js-infinite-slider end -->
+				</div><!-- pos-rel end -->
+			</section><!-- about us end -->
+					<!-- clients start -->
 
 
-          <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const contactForm = document.getElementById('contact-form');
-                const messageContainer = document.getElementById('message-container');
+
         
-                contactForm.addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    const formData = new FormData(contactForm);
-        
-                    fetch(contactForm.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            messageContainer.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-                            contactForm.reset();
-                        } else {
-                            messageContainer.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error(error);
-                        messageContainer.innerHTML = `<div class="alert alert-danger">Une erreur s'est produite lors de l'envoi du formulaire.</div>`;
-                    });
-                });
-            });
-        </script>
-        
+          {% include 'includes/footer.html' %}
 
-    <!--== Start Brand Logo Area ==-->
-    <section class="brand-logo-area brand-logo-default-area">
-      <div class="container">
-        <div class="row" data-aos="fade-up" data-aos-duration="1000">
+		<!-- scripts -->
+		<script src="{% static 'assets/js/plugins.js'%}"></script>
+		<script src="{% static 'assets/js/footer-reveal.js'%}"></script>
+		<script src="{% static 'assets/js/main.js'%}"></script>
+		<script src="{% static 'assets/js/footer-reveal_init.js'%}"></script>
 
-        </div>
-      </div>
-    </section>
-    <!--== End Brand Logo Area ==-->
-  </main>
-
-  <!--== Start Footer Area Wrapper ==-->
-  <footer class="footer-area">
-    <div class="footer-main">
-      <div class="container">
-        <div class="row">
-        </div>
-      </div>
-      <!--== Scroll Top Button ==-->
-      <div class="scroll-to-top"><img src="{% static 'assets/img/icons/arrow-up-line.png' %}" alt="Icon-Image"></div>
-    </div>
-    <div class="footer-bottom">
-      <div class="container">
-        <div class="footer-bottom-content">
-          <div class="row align-items-center">
-            <div class="col-12">
-              <div class="widget-copyright text-center">
-                <p>© 2024 <a target="_blank" href="#">Pencum Tech</a></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
-  <!--== End Footer Area Wrapper ==-->
-
-  <!--== Start Side Menu ==-->
-  <aside class="off-canvas-wrapper">
-    <div class="off-canvas-inner">
-      <div class="off-canvas-overlay"></div>
-      <!-- Start Off Canvas Content Wrapper -->
-      <div class="off-canvas-content">
-        <!-- Off Canvas Header -->
-        <div class="off-canvas-header">
-          <div class="logo-area">
-            <a href="index.html"><img src="{% static 'assets/img/logo.png' %}" alt="Logo" /></a>
-          </div>
-          <div class="close-action">
-            <button class="btn-close"><i class="icofont-close"></i></button>
-          </div>
-        </div>
-
-        <div class="off-canvas-item">
-          <!-- Start Mobile Menu Wrapper -->
-          <div class="res-mobile-menu menu-active-one">
-            <!-- Note Content Auto Generate By Jquery From Main Menu -->
-          </div>
-          <!-- End Mobile Menu Wrapper -->
-        </div>
-        <!-- Off Canvas Footer -->
-        <div class="off-canvas-footer"></div>
-      </div>
-      <!-- End Off Canvas Content Wrapper -->
-    </div>
-  </aside>
-  <!--== End Side Menu ==-->  
-</div>
-
-<!--=======================Javascript============================-->
-
-<!--=== Modernizr Min Js ===-->
-<script src="{% static 'assets/js/modernizr.js' %}"></script>
-<!--=== jQuery Min Js ===-->
-<script src="{% static 'assets/js/jquery-main.js' %}"></script>
-<!--=== jQuery Migration Min Js ===-->
-<script src="{% static 'assets/js/jquery-migrate.js' %}"></script>
-<!--=== Popper Min Js ===-->
-<script src="{% static 'assets/js/popper.min.js' %}"></script>
-<!--=== Bootstrap Min Js ===-->
-<script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
-<!--=== jquery Appear Js ===-->
-<script src="{% static 'assets/js/jquery.appear.js' %}"></script>
-<!--=== jquery Swiper Min Js ===-->
-<script src="{% static 'assets/js/swiper.min.js' %}"></script>
-<!--=== jquery Fancybox Min Js ===-->
-<script src="{% static 'assets/js/fancybox.min.js' %}"></script>
-<!--=== jquery Aos Min Js ===-->
-<script src="{% static 'assets/js/aos.min.js' %}"></script>
-<!--=== jquery Tilt Animation Js ===-->
-<script src="{% static 'assets/js/tilt-animation.js' %}"></script>
-<!--=== jquery Scene Mouse Move Min Js ===-->
-<script src="{% static 'assets/js/parallax.min.js' %}"></script>
-<!--=== jquery Slicknav Js ===-->
-<script src="{% static 'assets/js/jquery.slicknav.js' %}"></script>
-<!--=== jquery Counterup Js ===-->
-<script src="{% static 'assets/js/counterup.js' %}"></script>
-<!--=== jquery Waypoint Js ===-->
-<script src="{% static 'assets/js/waypoint.js' %}"></script>
-<!--=== jquery Wow Min Js ===-->
-<script src="{% static 'assets/js/wow.min.js' %}"></script>
-<!--=== jQuery EasyPieChart Min Js ===-->
-<script src="{% static 'assets/js/jquery.easypiechart.min.js' %}"></script>
-
-<!--=== Custom Js ===-->
-<script src="{% static 'assets/js/custom.js' %}"></script>
-
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>
-
-
-<!-- Mirrored from htmldemo.net/givest/givest/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 03 Jan 2024 09:05:14 GMT -->
 </html>
