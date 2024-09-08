@@ -38,7 +38,7 @@ def overlay_photos(request):
                     return JsonResponse({'success': False, 'message': 'Invalid image format.'}, status=400)
 
                 # Load the background image
-                background_path = os.path.join(settings.BASE_DIR, 'image_marker_01.jpg')  # Path to the background image
+                background_path = os.path.join(settings.BASE_DIR, 'image_marker.jpg')  # Path to the background image
                 background = cv2.imread(background_path)
 
                 # Process the background image to find the black area
