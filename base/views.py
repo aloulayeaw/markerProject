@@ -17,37 +17,21 @@ def home(request):
 
     return render(request, 'index.html')
 
-def should_crop(image):
-    """Détermine si l'image doit être rognée ou non."""
-    height, width = image.shape[:2]
-    aspect_ratio = height / width
-    # Si le rapport hauteur/largeur est plus grand que 1.3, on suppose que l'image est longue et doit être rognée
-    return aspect_ratio > 1.3
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-def crop_and_center_image(image):
-    """Rogne et centre l'image pour s'assurer que le visage est au centre et non étiré."""
-    height, width = image.shape[:2]
-    
-    if should_crop(image):
-        # Rogner pour capturer le visage et le haut du corps
-        crop_top = int(height * 0.15)  # Ajuster pour que le visage soit visible
-        crop_bottom = int(height * 0.55)  # Rogner environ 55% pour se concentrer sur le haut du corps
-        cropped_image = image[crop_top:crop_bottom, :]
-    else:
-        cropped_image = image  # Ne pas rogner si l'image n'est pas trop longue
-    
-    # Centrer l'image sans étirer
-    aspect_ratio = cropped_image.shape[1] / cropped_image.shape[0]
-    desired_size = min(cropped_image.shape[1], cropped_image.shape[0])
-    
-    if cropped_image.shape[1] > cropped_image.shape[0]:
-        padding = (cropped_image.shape[1] - desired_size) // 2
-        centered_image = cropped_image[:, padding:padding + desired_size]
-    else:
-        padding = (cropped_image.shape[0] - desired_size) // 2
-        centered_image = cropped_image[padding:padding + desired_size, :]
-    
-    return centered_image
+    if len(faces) == 0:
+        # Si aucun visage n'est détecté, retourner l'image d'origine
+        return image
+
+    # Prendre le premier visage détecté (si plusieurs, choisir le plus grand)
+    (x, y, w, h) = max(faces, key=lambda f: f[2] * f[3])
+
+    # Rogner l'image autour du visage détecté
+    margin = int(0.5 * h)  # Ajouter une marge pour inclure une partie du cou et des épaules
+    cropped_image = image[max(0, y - margin):min(image.shape[0], y + h + margin),
+                          max(0, x - margin):min(image.shape[1], x + w + margin)]
+
+    return cropped_image
 
 def overlay_photos(request):
     if request.method == 'POST':
@@ -68,8 +52,8 @@ def overlay_photos(request):
                     fs.delete(temp_image_path)
                     return JsonResponse({'success': False, 'message': 'Invalid image format.'}, status=400)
 
-                # Rogner et centrer l'image pour se concentrer sur le visage et éviter l'étirement
-                centered_image = crop_and_center_image(image)
+                # Détecter et rogner autour du visage
+                cropped_image = detect_and_crop_face(image)
 
                 # Charger l'image de fond
                 background_path = os.path.join(settings.BASE_DIR, 'image_marker.jpg')  # Chemin vers l'image de fond
@@ -86,7 +70,7 @@ def overlay_photos(request):
                     x, y, w, h = cv2.boundingRect(cnt)
 
                     # Redimensionner l'image téléchargée (rognée ou non) pour s'adapter à la zone noire
-                    resized_image = cv2.resize(centered_image, (w, h), interpolation=cv2.INTER_AREA)
+                    resized_image = cv2.resize(cropped_image, (w, h), interpolation=cv2.INTER_AREA)
 
                     # Créer un masque circulaire à appliquer sur l'image redimensionnée
                     radius = min(w, h) // 2
@@ -132,7 +116,6 @@ def overlay_photos(request):
         return render(request, 'base/upload.html', {'form': form})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
-
 
 
 def contact(request):
