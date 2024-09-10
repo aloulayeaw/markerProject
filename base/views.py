@@ -21,19 +21,8 @@ def should_crop(image):
     """Détermine si l'image doit être rognée ou non."""
     height, width = image.shape[:2]
     aspect_ratio = height / width
-    # Si le rapport hauteur/largeur est plus grand que 1.5, on suppose que l'image est longue et doit être rognée
-    return aspect_ratio > 1.3  # Ajusté à 1.3 pour mieux gérer les images longues
-
-def crop_image(image):
-    """Rogne encore plus les images longues pour se concentrer sur le visage."""
-    height, width = image.shape[:2]
-    
-    if should_crop(image):
-        # Rogner la partie supérieure (environ les 40% du haut)
-        crop_top = int(height * 0.35)  # Ajuster selon la taille du visage
-        return image[crop_top:crop_top + int(height * 0.4), :]
-    else:
-        return image  # Ne pas rogner
+    # Si le rapport hauteur/largeur est plus grand que 1.5, on suppose que l'image est d'une personne debout et doit être rognée
+    return aspect_ratio > 1.5
 
 def overlay_photos(request):
     if request.method == 'POST':
@@ -54,8 +43,13 @@ def overlay_photos(request):
                     fs.delete(temp_image_path)
                     return JsonResponse({'success': False, 'message': 'Invalid image format.'}, status=400)
 
-                # Rogner l'image si nécessaire
-                cropped_image = crop_image(image)
+                # Déterminer si l'image doit être rognée ou non
+                if should_crop(image):
+                    height, width = image.shape[:2]
+                    # Rogner l'image en prenant la moitié supérieure
+                    cropped_image = image[:height // 2, :]
+                else:
+                    cropped_image = image  # Ne pas rogner
 
                 # Charger l'image de fond
                 background_path = os.path.join(settings.BASE_DIR, 'image_marker.jpg')  # Chemin vers l'image de fond
@@ -118,6 +112,7 @@ def overlay_photos(request):
         return render(request, 'base/upload.html', {'form': form})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
 
 
 
