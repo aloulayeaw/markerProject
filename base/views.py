@@ -21,8 +21,20 @@ def should_crop(image):
     """Détermine si l'image doit être rognée ou non."""
     height, width = image.shape[:2]
     aspect_ratio = height / width
-    # Si le rapport hauteur/largeur est plus grand que 1.5, on suppose que l'image est d'une personne debout et doit être rognée
-    return aspect_ratio > 1.5
+    # Si le rapport hauteur/largeur est plus grand que 1.3, on suppose que l'image est longue et doit être rognée
+    return aspect_ratio > 1.3
+
+def crop_to_face(image):
+    """Rogne fortement pour capturer uniquement la partie supérieure (visage) pour les images longues."""
+    height, width = image.shape[:2]
+    
+    if should_crop(image):
+        # Rogner pour capturer seulement le haut de l'image, en supposant que le visage est dans les 25% supérieurs
+        crop_top = int(height * 0.15)  # Ajuster la hauteur du début du rognage
+        crop_bottom = int(height * 0.55)  # Rogner à 55% de la hauteur pour capturer juste le visage
+        return image[crop_top:crop_bottom, :]
+    else:
+        return image  # Ne pas rogner
 
 def overlay_photos(request):
     if request.method == 'POST':
@@ -43,13 +55,8 @@ def overlay_photos(request):
                     fs.delete(temp_image_path)
                     return JsonResponse({'success': False, 'message': 'Invalid image format.'}, status=400)
 
-                # Déterminer si l'image doit être rognée ou non
-                if should_crop(image):
-                    height, width = image.shape[:2]
-                    # Rogner l'image en prenant la moitié supérieure
-                    cropped_image = image[:height // 2, :]
-                else:
-                    cropped_image = image  # Ne pas rogner
+                # Rogner l'image pour se concentrer sur le visage si nécessaire
+                cropped_image = crop_to_face(image)
 
                 # Charger l'image de fond
                 background_path = os.path.join(settings.BASE_DIR, 'image_marker.jpg')  # Chemin vers l'image de fond
@@ -112,7 +119,6 @@ def overlay_photos(request):
         return render(request, 'base/upload.html', {'form': form})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
-
 
 
 
