@@ -17,6 +17,12 @@ def home(request):
 
     return render(request, 'index.html')
 
+def should_crop(image):
+    """Détermine si l'image doit être rognée ou non."""
+    height, width = image.shape[:2]
+    aspect_ratio = height / width
+    # Si le rapport hauteur/largeur est plus grand que 1.5, on suppose que l'image est d'une personne debout et doit être rognée
+    return aspect_ratio > 1.5
 
 def overlay_photos(request):
     if request.method == 'POST':
@@ -25,71 +31,79 @@ def overlay_photos(request):
             if form.is_valid():
                 uploaded_image = request.FILES['image']
 
-                # Save the uploaded file temporarily
+                # Enregistrer le fichier téléchargé temporairement
                 fs = FileSystemStorage()
                 temp_image_path = fs.save(f'temp_{uploaded_image.name}', uploaded_image)
                 temp_image_path = os.path.join(settings.MEDIA_ROOT, temp_image_path)
 
-                # Load the uploaded image
+                # Charger l'image téléchargée
                 image = cv2.imread(temp_image_path)
 
                 if image is None or len(image.shape) not in [2, 3]:
                     fs.delete(temp_image_path)
                     return JsonResponse({'success': False, 'message': 'Invalid image format.'}, status=400)
 
-                # Load the background image
-                background_path = os.path.join(settings.BASE_DIR, 'image_marker.jpg')  # Path to the background image
+                # Déterminer si l'image doit être rognée ou non
+                if should_crop(image):
+                    height, width = image.shape[:2]
+                    # Rogner l'image en prenant la moitié supérieure
+                    cropped_image = image[:height // 2, :]
+                else:
+                    cropped_image = image  # Ne pas rogner
+
+                # Charger l'image de fond
+                background_path = os.path.join(settings.BASE_DIR, 'image_marker.jpg')  # Chemin vers l'image de fond
                 background = cv2.imread(background_path)
 
-                # Process the background image to find the black area
+                # Traiter l'image de fond pour trouver la zone noire
                 gray_background = cv2.cvtColor(background, cv2.COLOR_BGR2GRAY)
-                _, mask = cv2.threshold(gray_background, 10, 255, cv2.THRESH_BINARY_INV)  # Detect the black area
+                _, mask = cv2.threshold(gray_background, 10, 255, cv2.THRESH_BINARY_INV)  # Détecter la zone noire
 
-                # Find contours in the black area
+                # Trouver les contours dans la zone noire
                 contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                 if contours:
                     cnt = max(contours, key=cv2.contourArea)
                     x, y, w, h = cv2.boundingRect(cnt)
 
-                    # Resize the uploaded image to fit into the black area
-                    resized_image = cv2.resize(image, (w, h), interpolation=cv2.INTER_AREA)
+                    # Redimensionner l'image téléchargée (rognée ou non) pour s'adapter à la zone noire
+                    resized_image = cv2.resize(cropped_image, (w, h), interpolation=cv2.INTER_AREA)
 
-                    # Create a circular mask to apply on the resized image
+                    # Créer un masque circulaire à appliquer sur l'image redimensionnée
                     radius = min(w, h) // 2
                     center = (w // 2, h // 2)
                     circular_mask = np.zeros((h, w, 4), dtype=np.uint8)
                     cv2.circle(circular_mask, center, radius, (255, 255, 255, 255), -1)
 
-                    # Apply the circular mask to the resized image
+                    # Appliquer le masque circulaire sur l'image redimensionnée
                     resized_image_rgba = cv2.cvtColor(resized_image, cv2.COLOR_BGR2BGRA)
                     masked_image = cv2.bitwise_and(resized_image_rgba, circular_mask)
 
-                    # Ensure transparency where the black was in the mask
+                    # Assurer la transparence là où était le noir dans le masque
                     alpha_mask = circular_mask[:, :, 3] / 255.0
                     alpha_inv = 1.0 - alpha_mask
                     for c in range(3):
                         background[y:y+h, x:x+w, c] = (alpha_mask * masked_image[:, :, c] +
                                                        alpha_inv * background[y:y+h, x:x+w, c])
 
-                    # Convert the final image to JPEG format and then to base64
+                    # Convertir l'image finale au format JPEG puis en base64
                     _, buffer = cv2.imencode('.jpg', background)
                     image_base64 = base64.b64encode(buffer).decode('utf-8')
 
-                    # Delete the temporary uploaded image
+                    # Supprimer l'image téléchargée temporairement
                     fs.delete(temp_image_path)
 
-                    # Return JSON response with the base64 image
+                    # Retourner une réponse JSON avec l'image en base64
                     return JsonResponse({'success': True, 'result_image': image_base64})
 
                 else:
                     fs.delete(temp_image_path)
                     return JsonResponse({'success': False, 'message': 'No contours found.'}, status=400)
 
-            # If form is not valid
+            # Si le formulaire n'est pas valide
             return JsonResponse({'success': False, 'message': 'Invalid form data.'}, status=400)
 
         except Exception as e:
-            # Return JSON response in case of any unexpected exception
+            # Retourner une réponse JSON en cas d'exception inattendue
             return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
     elif request.method == 'GET':
@@ -98,6 +112,8 @@ def overlay_photos(request):
         return render(request, 'base/upload.html', {'form': form})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+
 
 
 def contact(request):
