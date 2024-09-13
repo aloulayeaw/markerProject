@@ -17,44 +17,58 @@ def home(request):
 
     return render(request, 'index.html')
 
-def detect_face(image):
-    """Détecte un visage dans l'image pour cibler correctement la figure."""
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+def should_crop(image):
+    """Détermine si l'image doit être rognée ou non."""
+    height, width = image.shape[:2]
+    aspect_ratio = height / width
     
-    if len(faces) > 0:
-        # Retourner le premier visage détecté
-        (x, y, w, h) = faces[0]
-        return (x, y, w, h)
-    else:
-        return None
+    # Si le rapport hauteur/largeur est plus grand que 1.3, on suppose que l'image est longue et doit être rognée
+    return aspect_ratio > 1.3
 
-def crop_and_resize_image(image, mask_width, mask_height):
-    """Rogne et redimensionne l'image pour qu'elle s'adapte à la zone cible sans zoom excessif."""
+def is_person_sitting(image):
+    """Détecte si la personne est assise en se basant sur la proportion verticale occupée par la personne."""
     height, width = image.shape[:2]
 
-    # Détecter le visage pour centrer l'image autour du visage
-    face = detect_face(image)
-    
-    if face:
-        (x, y, w, h) = face
-        
-        # Déterminer les bords de la zone à conserver
-        crop_top = max(0, y - int(h * 0.5))  # Inclure un peu au-dessus du visage
-        crop_bottom = min(height, y + int(h * 2))  # Inclure un peu en dessous du visage pour couvrir la figure
+    # Estimer la hauteur occupée par la personne par rapport à la hauteur totale
+    # Cette étape pourrait être améliorée avec une détection d'objet ou de visage plus précise
+    # Pour l'instant, on fait une simple hypothèse basée sur la taille de l'image
+
+    # Si la personne occupe moins de 50% de l'image en hauteur, on suppose qu'elle est assise
+    # Cette valeur peut être ajustée en fonction des besoins
+    person_height = height * 0.6  # Hypothèse simple pour estimer la hauteur du corps par rapport à l'image
+    return person_height < height * 0.5
+
+def crop_and_center_image(image):
+    """Rogne et centre l'image en fonction de si la personne est assise ou debout."""
+    height, width = image.shape[:2]
+
+    # Vérifier si l'image doit être rognée
+    if should_crop(image):
+        if is_person_sitting(image):
+            # Si la personne est assise, moins de zoom : on ajuste les proportions de rognage
+            crop_top = int(height * 0.25)  # Rogner légèrement le haut pour centrer le visage
+            crop_bottom = int(height * 0.85)  # Garder une bonne portion de l'image pour ne pas trop zoomer
+        else:
+            # Si la personne est debout, on rogne plus fortement pour se concentrer sur le haut du corps
+            crop_top = int(height * 0.15)  # Rogner plus pour centrer le visage
+            crop_bottom = int(height * 0.55)  # Rogner environ 55% pour se concentrer sur le haut du corps
         
         cropped_image = image[crop_top:crop_bottom, :]
     else:
-        # Si aucun visage n'est détecté, centrer sur la partie médiane de l'image
-        crop_top = int(height * 0.15)
-        crop_bottom = int(height * 0.85)
-        cropped_image = image[crop_top:crop_bottom, :]
+        cropped_image = image  # Ne pas rogner si l'image n'est pas trop longue
 
-    # Redimensionner l'image pour s'adapter à la zone du masque circulaire
-    resized_image = cv2.resize(cropped_image, (mask_width, mask_height), interpolation=cv2.INTER_AREA)
+    # Centrer l'image sans l'étirer
+    aspect_ratio = cropped_image.shape[1] / cropped_image.shape[0]
+    desired_size = min(cropped_image.shape[1], cropped_image.shape[0])
 
-    return resized_image
+    if cropped_image.shape[1] > cropped_image.shape[0]:
+        padding = (cropped_image.shape[1] - desired_size) // 2
+        centered_image = cropped_image[:, padding:padding + desired_size]
+    else:
+        padding = (cropped_image.shape[0] - desired_size) // 2
+        centered_image = cropped_image[padding:padding + desired_size, :]
+
+    return centered_image
 
 def overlay_photos(request):
     if request.method == 'POST':
@@ -75,7 +89,10 @@ def overlay_photos(request):
                     fs.delete(temp_image_path)
                     return JsonResponse({'success': False, 'message': 'Invalid image format.'}, status=400)
 
-                # Charger l'image de fond (contenant la zone noire circulaire)
+                # Rogner et centrer l'image pour se concentrer sur le visage et éviter l'étirement
+                centered_image = crop_and_center_image(image)
+
+                # Charger l'image de fond
                 background_path = os.path.join(settings.BASE_DIR, 'image_marker.jpg')  # Chemin vers l'image de fond
                 background = cv2.imread(background_path)
 
@@ -89,8 +106,8 @@ def overlay_photos(request):
                     cnt = max(contours, key=cv2.contourArea)
                     x, y, w, h = cv2.boundingRect(cnt)
 
-                    # Rogner et redimensionner l'image téléchargée pour s'adapter à la zone noire
-                    resized_image = crop_and_resize_image(image, w, h)
+                    # Redimensionner l'image téléchargée (rognée ou non) pour s'adapter à la zone noire
+                    resized_image = cv2.resize(centered_image, (w, h), interpolation=cv2.INTER_AREA)
 
                     # Créer un masque circulaire à appliquer sur l'image redimensionnée
                     radius = min(w, h) // 2
