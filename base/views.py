@@ -17,45 +17,39 @@ def home(request):
 
     return render(request, 'index.html')
 
-def should_crop(image):
-    """Détermine si l'image doit être rognée ou non."""
-    height, width = image.shape[:2]
-    aspect_ratio = height / width
+def detect_face(image):
+    """Détecte un visage dans l'image pour cibler correctement la figure."""
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
     
-    # Si le rapport hauteur/largeur est plus grand que 1.3, on suppose que l'image est longue et doit être rognée
-    return aspect_ratio > 1.3
-
-def is_person_sitting(image):
-    """Détecte si la personne est assise en se basant sur la proportion verticale occupée par la personne."""
-    height, width = image.shape[:2]
-
-    # Estimer la hauteur occupée par la personne par rapport à la hauteur totale
-    # Cette étape pourrait être améliorée avec une détection d'objet ou de visage plus précise
-    # Pour l'instant, on fait une simple hypothèse basée sur la taille de l'image
-
-    # Si la personne occupe moins de 50% de l'image en hauteur, on suppose qu'elle est assise
-    # Cette valeur peut être ajustée en fonction des besoins
-    person_height = height * 0.6  # Hypothèse simple pour estimer la hauteur du corps par rapport à l'image
-    return person_height < height * 0.5
+    if len(faces) > 0:
+        # Retourner le premier visage détecté
+        (x, y, w, h) = faces[0]
+        return (x, y, w, h)
+    else:
+        return None
 
 def crop_and_center_image(image):
-    """Rogne et centre l'image en fonction de si la personne est assise ou debout."""
+    """Rogne et centre l'image en fonction du visage détecté pour cibler la figure."""
     height, width = image.shape[:2]
 
-    # Vérifier si l'image doit être rognée
-    if should_crop(image):
-        if is_person_sitting(image):
-            # Si la personne est assise, moins de zoom : on ajuste les proportions de rognage
-            crop_top = int(height * 0.25)  # Rogner légèrement le haut pour centrer le visage
-            crop_bottom = int(height * 0.85)  # Garder une bonne portion de l'image pour ne pas trop zoomer
-        else:
-            # Si la personne est debout, on rogne plus fortement pour se concentrer sur le haut du corps
-            crop_top = int(height * 0.15)  # Rogner plus pour centrer le visage
-            crop_bottom = int(height * 0.55)  # Rogner environ 55% pour se concentrer sur le haut du corps
+    # Détecter le visage pour cibler la figure
+    face = detect_face(image)
+    
+    if face:
+        (x, y, w, h) = face
+        
+        # Déterminer la zone à garder en fonction du visage (figure = visage + partie supérieure du corps)
+        crop_top = max(0, y - int(h * 0.5))  # Prendre 50% de la hauteur du visage au-dessus du visage
+        crop_bottom = min(height, y + int(h * 2.5))  # Prendre environ 2,5 fois la hauteur du visage en dessous
         
         cropped_image = image[crop_top:crop_bottom, :]
     else:
-        cropped_image = image  # Ne pas rogner si l'image n'est pas trop longue
+        # Si aucun visage n'est détecté, utiliser une stratégie de base pour centrer l'image
+        crop_top = int(height * 0.15)  # Rogner légèrement le haut
+        crop_bottom = int(height * 0.55)  # Conserver une partie significative du haut du corps
+        cropped_image = image[crop_top:crop_bottom, :]
 
     # Centrer l'image sans l'étirer
     aspect_ratio = cropped_image.shape[1] / cropped_image.shape[0]
@@ -89,7 +83,7 @@ def overlay_photos(request):
                     fs.delete(temp_image_path)
                     return JsonResponse({'success': False, 'message': 'Invalid image format.'}, status=400)
 
-                # Rogner et centrer l'image pour se concentrer sur le visage et éviter l'étirement
+                # Rogner et centrer l'image pour se concentrer sur la figure (visage + haut du corps)
                 centered_image = crop_and_center_image(image)
 
                 # Charger l'image de fond
@@ -153,7 +147,6 @@ def overlay_photos(request):
         return render(request, 'base/upload.html', {'form': form})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
-
 
 def contact(request):
     if request.method == 'POST':
