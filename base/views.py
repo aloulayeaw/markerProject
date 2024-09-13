@@ -31,7 +31,7 @@ def detect_face(image):
         return None
 
 def crop_and_resize_image(image, mask_width, mask_height):
-    """Rogne et redimensionne l'image pour qu'elle s'adapte à la zone cible sans zoom excessif."""
+    """Rogne et redimensionne l'image pour qu'elle s'adapte à la zone cible sans zoom excessif et sans étirer."""
     height, width = image.shape[:2]
 
     # Détecter le visage pour centrer l'image autour du visage
@@ -51,10 +51,31 @@ def crop_and_resize_image(image, mask_width, mask_height):
         crop_bottom = int(height * 0.85)
         cropped_image = image[crop_top:crop_bottom, :]
 
-    # Redimensionner l'image pour s'adapter à la zone du masque circulaire
-    resized_image = cv2.resize(cropped_image, (mask_width, mask_height), interpolation=cv2.INTER_AREA)
+    # Ajuster le redimensionnement tout en conservant le ratio d'aspect
+    aspect_ratio_image = cropped_image.shape[1] / cropped_image.shape[0]
+    aspect_ratio_mask = mask_width / mask_height
 
-    return resized_image
+    if aspect_ratio_image > aspect_ratio_mask:
+        # Si l'image est plus large que le masque, ajuster selon la largeur
+        new_width = mask_width
+        new_height = int(new_width / aspect_ratio_image)
+    else:
+        # Si l'image est plus haute que le masque, ajuster selon la hauteur
+        new_height = mask_height
+        new_width = int(new_height * aspect_ratio_image)
+
+    resized_image = cv2.resize(cropped_image, (new_width, new_height), interpolation=cv2.INTER_AREA)
+
+    # Ajouter du padding si nécessaire pour que l'image s'adapte parfaitement au masque
+    delta_w = mask_width - new_width
+    delta_h = mask_height - new_height
+    top, bottom = delta_h // 2, delta_h - (delta_h // 2)
+    left, right = delta_w // 2, delta_w - (delta_w // 2)
+
+    # Ajouter des bordures pour centrer l'image dans la zone du masque
+    padded_image = cv2.copyMakeBorder(resized_image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[0, 0, 0])
+
+    return padded_image
 
 def overlay_photos(request):
     if request.method == 'POST':
@@ -89,7 +110,7 @@ def overlay_photos(request):
                     cnt = max(contours, key=cv2.contourArea)
                     x, y, w, h = cv2.boundingRect(cnt)
 
-                    # Rogner et redimensionner l'image téléchargée pour s'adapter à la zone noire
+                    # Rogner et redimensionner l'image téléchargée pour s'adapter à la zone noire sans étirement
                     resized_image = crop_and_resize_image(image, w, h)
 
                     # Créer un masque circulaire à appliquer sur l'image redimensionnée
