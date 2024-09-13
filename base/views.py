@@ -19,6 +19,9 @@ def home(request):
 
     return render(request, 'index.html')
 
+
+
+# Fonction pour vérifier si l'image doit être rognée
 def should_crop(image):
     """Détermine si l'image doit être rognée ou non."""
     height, width = image.shape[:2]
@@ -32,23 +35,25 @@ def is_person_sitting(image):
     person_height = height * 0.6
     return person_height < height * 0.5
 
-# Fonction pour rogner et centrer l'image
+# Fonction pour rogner et centrer l'image avec un zoom modéré
 def crop_and_center_image(image):
-    """Rogne et centre l'image en fonction de si la personne est assise ou debout."""
+    """Rogne et centre l'image en fonction de si la personne est assise ou debout, avec un zoom modéré."""
     height, width = image.shape[:2]
 
     if should_crop(image):
         if is_person_sitting(image):
-            crop_top = int(height * 0.25)
-            crop_bottom = int(height * 0.85)
+            crop_top = int(height * 0.10)  # Rogner légèrement le haut pour centrer le visage
+            crop_bottom = int(height * 0.90)  # Garder la majeure partie de l'image
         else:
-            crop_top = int(height * 0.15)
-            crop_bottom = int(height * 0.55)
+            crop_top = int(height * 0.05)  # Moins de rognage sur le haut
+            crop_bottom = int(height * 0.95)  # Moins de rognage sur le bas
         cropped_image = image[crop_top:crop_bottom, :]
     else:
         cropped_image = image
 
+    # Assurer que l'image est bien centrée
     desired_size = min(cropped_image.shape[1], cropped_image.shape[0])
+
     if cropped_image.shape[1] > cropped_image.shape[0]:
         padding = (cropped_image.shape[1] - desired_size) // 2
         centered_image = cropped_image[:, padding:padding + desired_size]
