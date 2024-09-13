@@ -21,32 +21,53 @@ def should_crop(image):
     """Détermine si l'image doit être rognée ou non."""
     height, width = image.shape[:2]
     aspect_ratio = height / width
+    
     # Si le rapport hauteur/largeur est plus grand que 1.3, on suppose que l'image est longue et doit être rognée
     return aspect_ratio > 1.3
 
-def crop_and_center_image(image):
-    """Rogne et centre l'image pour s'assurer que le visage est au centre et non étiré."""
+def is_person_sitting(image):
+    """Détecte si la personne est assise en se basant sur la proportion verticale occupée par la personne."""
     height, width = image.shape[:2]
-    
+
+    # Estimer la hauteur occupée par la personne par rapport à la hauteur totale
+    # Cette étape pourrait être améliorée avec une détection d'objet ou de visage plus précise
+    # Pour l'instant, on fait une simple hypothèse basée sur la taille de l'image
+
+    # Si la personne occupe moins de 50% de l'image en hauteur, on suppose qu'elle est assise
+    # Cette valeur peut être ajustée en fonction des besoins
+    person_height = height * 0.6  # Hypothèse simple pour estimer la hauteur du corps par rapport à l'image
+    return person_height < height * 0.5
+
+def crop_and_center_image(image):
+    """Rogne et centre l'image en fonction de si la personne est assise ou debout."""
+    height, width = image.shape[:2]
+
+    # Vérifier si l'image doit être rognée
     if should_crop(image):
-        # Rogner pour capturer le visage et le haut du corps
-        crop_top = int(height * 0.15)  # Ajuster pour que le visage soit visible
-        crop_bottom = int(height * 0.55)  # Rogner environ 55% pour se concentrer sur le haut du corps
+        if is_person_sitting(image):
+            # Si la personne est assise, moins de zoom : on ajuste les proportions de rognage
+            crop_top = int(height * 0.25)  # Rogner légèrement le haut pour centrer le visage
+            crop_bottom = int(height * 0.85)  # Garder une bonne portion de l'image pour ne pas trop zoomer
+        else:
+            # Si la personne est debout, on rogne plus fortement pour se concentrer sur le haut du corps
+            crop_top = int(height * 0.15)  # Rogner plus pour centrer le visage
+            crop_bottom = int(height * 0.55)  # Rogner environ 55% pour se concentrer sur le haut du corps
+        
         cropped_image = image[crop_top:crop_bottom, :]
     else:
         cropped_image = image  # Ne pas rogner si l'image n'est pas trop longue
-    
-    # Centrer l'image sans étirer
+
+    # Centrer l'image sans l'étirer
     aspect_ratio = cropped_image.shape[1] / cropped_image.shape[0]
     desired_size = min(cropped_image.shape[1], cropped_image.shape[0])
-    
+
     if cropped_image.shape[1] > cropped_image.shape[0]:
         padding = (cropped_image.shape[1] - desired_size) // 2
         centered_image = cropped_image[:, padding:padding + desired_size]
     else:
         padding = (cropped_image.shape[0] - desired_size) // 2
         centered_image = cropped_image[padding:padding + desired_size, :]
-    
+
     return centered_image
 
 def overlay_photos(request):
@@ -132,7 +153,6 @@ def overlay_photos(request):
         return render(request, 'base/upload.html', {'form': form})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
-
 
 
 def contact(request):
