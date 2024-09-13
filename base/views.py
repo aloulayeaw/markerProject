@@ -160,7 +160,6 @@ def overlay_photos(request):
 
 
 
-
 def contact(request):
     if request.method == 'POST':
         name = request.POST.get('Name')
