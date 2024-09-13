@@ -10,7 +10,7 @@ from django.conf import settings
 import os
 import numpy as np
 import base64
-import xml.etree.ElementTree as ET
+
 
 # Create your views here.
 def home(request):  
@@ -69,44 +69,6 @@ def crop_and_center_image(image):
         centered_image = cropped_image[padding:padding + desired_size, :]
 
     return centered_image
-
-
-def update_photo_count():
-    """Met à jour le fichier XML pour enregistrer le nombre de photos générées par jour."""
-    # Chemin du fichier XML
-    xml_file = 'photo_count.xml'
-
-    # Obtenir la date actuelle
-    today_date = datetime.now().strftime('%Y-%m-%d')
-
-    # Si le fichier XML n'existe pas, on le crée
-    if not os.path.exists(xml_file):
-        root = ET.Element("photos")
-        day_entry = ET.SubElement(root, "day", date=today_date)
-        ET.SubElement(day_entry, "count").text = "1"
-        tree = ET.ElementTree(root)
-        tree.write(xml_file)
-    else:
-        # Si le fichier existe, on le charge et on met à jour les données
-        tree = ET.parse(xml_file)
-        root = tree.getroot()
-
-        # Rechercher l'entrée pour la date d'aujourd'hui
-        day_entry = root.find(f".//day[@date='{today_date}']")
-        if day_entry is not None:
-            # Si une entrée pour aujourd'hui existe, on incrémente le compteur
-            count = day_entry.find('count')
-            count.text = str(int(count.text) + 1)
-        else:
-            # Si aucune entrée pour aujourd'hui, on en crée une nouvelle
-            day_entry = ET.SubElement(root, "day", date=today_date)
-            ET.SubElement(day_entry, "count").text = "1"
-
-        # Sauvegarder les modifications dans le fichier XML
-        tree.write(xml_file)
-
-    # Afficher le nombre de photos générées aujourd'hui
-    print(f"Nombre de photos générées aujourd'hui ({today_date}): {day_entry.find('count').text}")
 
 def overlay_photos(request):
     if request.method == 'POST':
@@ -171,9 +133,6 @@ def overlay_photos(request):
                     # Supprimer l'image téléchargée temporairement
                     fs.delete(temp_image_path)
 
-                    # Mettre à jour le fichier XML avec le nombre de photos générées
-                    update_photo_count()
-
                     # Retourner une réponse JSON avec l'image en base64
                     return JsonResponse({'success': True, 'result_image': image_base64})
 
@@ -194,6 +153,7 @@ def overlay_photos(request):
         return render(request, 'base/upload.html', {'form': form})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
 
 def contact(request):
     if request.method == 'POST':
