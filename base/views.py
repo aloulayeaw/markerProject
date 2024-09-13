@@ -30,39 +30,31 @@ def detect_face(image):
     else:
         return None
 
-def crop_and_center_image(image):
-    """Rogne et centre l'image en fonction du visage détecté pour cibler la figure."""
+def crop_and_resize_image(image, mask_width, mask_height):
+    """Rogne et redimensionne l'image pour qu'elle s'adapte à la zone cible sans zoom excessif."""
     height, width = image.shape[:2]
 
-    # Détecter le visage pour cibler la figure
+    # Détecter le visage pour centrer l'image autour du visage
     face = detect_face(image)
     
     if face:
         (x, y, w, h) = face
         
-        # Déterminer la zone à garder en fonction du visage (figure = visage + partie supérieure du corps)
-        crop_top = max(0, y - int(h * 0.5))  # Prendre 50% de la hauteur du visage au-dessus du visage
-        crop_bottom = min(height, y + int(h * 2.5))  # Prendre environ 2,5 fois la hauteur du visage en dessous
+        # Déterminer les bords de la zone à conserver
+        crop_top = max(0, y - int(h * 0.5))  # Inclure un peu au-dessus du visage
+        crop_bottom = min(height, y + int(h * 2))  # Inclure un peu en dessous du visage pour couvrir la figure
         
         cropped_image = image[crop_top:crop_bottom, :]
     else:
-        # Si aucun visage n'est détecté, utiliser une stratégie de base pour centrer l'image
-        crop_top = int(height * 0.15)  # Rogner légèrement le haut
-        crop_bottom = int(height * 0.55)  # Conserver une partie significative du haut du corps
+        # Si aucun visage n'est détecté, centrer sur la partie médiane de l'image
+        crop_top = int(height * 0.15)
+        crop_bottom = int(height * 0.85)
         cropped_image = image[crop_top:crop_bottom, :]
 
-    # Centrer l'image sans l'étirer
-    aspect_ratio = cropped_image.shape[1] / cropped_image.shape[0]
-    desired_size = min(cropped_image.shape[1], cropped_image.shape[0])
+    # Redimensionner l'image pour s'adapter à la zone du masque circulaire
+    resized_image = cv2.resize(cropped_image, (mask_width, mask_height), interpolation=cv2.INTER_AREA)
 
-    if cropped_image.shape[1] > cropped_image.shape[0]:
-        padding = (cropped_image.shape[1] - desired_size) // 2
-        centered_image = cropped_image[:, padding:padding + desired_size]
-    else:
-        padding = (cropped_image.shape[0] - desired_size) // 2
-        centered_image = cropped_image[padding:padding + desired_size, :]
-
-    return centered_image
+    return resized_image
 
 def overlay_photos(request):
     if request.method == 'POST':
@@ -83,10 +75,7 @@ def overlay_photos(request):
                     fs.delete(temp_image_path)
                     return JsonResponse({'success': False, 'message': 'Invalid image format.'}, status=400)
 
-                # Rogner et centrer l'image pour se concentrer sur la figure (visage + haut du corps)
-                centered_image = crop_and_center_image(image)
-
-                # Charger l'image de fond
+                # Charger l'image de fond (contenant la zone noire circulaire)
                 background_path = os.path.join(settings.BASE_DIR, 'image_marker.jpg')  # Chemin vers l'image de fond
                 background = cv2.imread(background_path)
 
@@ -100,8 +89,8 @@ def overlay_photos(request):
                     cnt = max(contours, key=cv2.contourArea)
                     x, y, w, h = cv2.boundingRect(cnt)
 
-                    # Redimensionner l'image téléchargée (rognée ou non) pour s'adapter à la zone noire
-                    resized_image = cv2.resize(centered_image, (w, h), interpolation=cv2.INTER_AREA)
+                    # Rogner et redimensionner l'image téléchargée pour s'adapter à la zone noire
+                    resized_image = crop_and_resize_image(image, w, h)
 
                     # Créer un masque circulaire à appliquer sur l'image redimensionnée
                     radius = min(w, h) // 2
@@ -147,6 +136,9 @@ def overlay_photos(request):
         return render(request, 'base/upload.html', {'form': form})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
+
+
+
 
 def contact(request):
     if request.method == 'POST':
