@@ -31,7 +31,7 @@ def detect_face(image):
         return None
 
 def crop_and_resize_image(image, mask_width, mask_height):
-    """Rogne et redimensionne l'image pour qu'elle remplisse la zone cible sans laisser de noir."""
+    """Rogne et redimensionne l'image pour qu'elle s'adapte à la zone cible sans zoom excessif."""
     height, width = image.shape[:2]
 
     # Détecter le visage pour centrer l'image autour du visage
@@ -51,7 +51,7 @@ def crop_and_resize_image(image, mask_width, mask_height):
         crop_bottom = int(height * 0.85)
         cropped_image = image[crop_top:crop_bottom, :]
 
-    # Ajuster le redimensionnement pour remplir toute la zone du masque circulaire
+    # Redimensionner l'image pour s'adapter à la zone du masque circulaire
     resized_image = cv2.resize(cropped_image, (mask_width, mask_height), interpolation=cv2.INTER_AREA)
 
     return resized_image
@@ -89,7 +89,7 @@ def overlay_photos(request):
                     cnt = max(contours, key=cv2.contourArea)
                     x, y, w, h = cv2.boundingRect(cnt)
 
-                    # Rogner et redimensionner l'image téléchargée pour s'adapter à la zone noire sans étirement
+                    # Rogner et redimensionner l'image téléchargée pour s'adapter à la zone noire
                     resized_image = crop_and_resize_image(image, w, h)
 
                     # Créer un masque circulaire à appliquer sur l'image redimensionnée
@@ -102,9 +102,12 @@ def overlay_photos(request):
                     resized_image_rgba = cv2.cvtColor(resized_image, cv2.COLOR_BGR2BGRA)
                     masked_image = cv2.bitwise_and(resized_image_rgba, circular_mask)
 
-                    # Appliquer l'image redimensionnée avec le masque circulaire sur l'arrière-plan
+                    # Assurer la transparence là où était le noir dans le masque
+                    alpha_mask = circular_mask[:, :, 3] / 255.0
+                    alpha_inv = 1.0 - alpha_mask
                     for c in range(3):
-                        background[y:y+h, x:x+w, c] = masked_image[:, :, c]
+                        background[y:y+h, x:x+w, c] = (alpha_mask * masked_image[:, :, c] +
+                                                       alpha_inv * background[y:y+h, x:x+w, c])
 
                     # Convertir l'image finale au format JPEG puis en base64
                     _, buffer = cv2.imencode('.jpg', background)
