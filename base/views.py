@@ -31,7 +31,7 @@ def detect_face(image):
         return None
 
 def crop_and_resize_image(image, mask_width, mask_height):
-    """Rogne et redimensionne l'image pour qu'elle s'adapte à la zone cible sans zoom excessif et sans étirer."""
+    """Rogne et redimensionne l'image pour qu'elle remplisse la zone cible sans laisser de noir."""
     height, width = image.shape[:2]
 
     # Détecter le visage pour centrer l'image autour du visage
@@ -51,31 +51,10 @@ def crop_and_resize_image(image, mask_width, mask_height):
         crop_bottom = int(height * 0.85)
         cropped_image = image[crop_top:crop_bottom, :]
 
-    # Ajuster le redimensionnement tout en conservant le ratio d'aspect
-    aspect_ratio_image = cropped_image.shape[1] / cropped_image.shape[0]
-    aspect_ratio_mask = mask_width / mask_height
+    # Ajuster le redimensionnement pour remplir toute la zone du masque circulaire
+    resized_image = cv2.resize(cropped_image, (mask_width, mask_height), interpolation=cv2.INTER_AREA)
 
-    if aspect_ratio_image > aspect_ratio_mask:
-        # Si l'image est plus large que le masque, ajuster selon la largeur
-        new_width = mask_width
-        new_height = int(new_width / aspect_ratio_image)
-    else:
-        # Si l'image est plus haute que le masque, ajuster selon la hauteur
-        new_height = mask_height
-        new_width = int(new_height * aspect_ratio_image)
-
-    resized_image = cv2.resize(cropped_image, (new_width, new_height), interpolation=cv2.INTER_AREA)
-
-    # Ajouter du padding si nécessaire pour que l'image s'adapte parfaitement au masque
-    delta_w = mask_width - new_width
-    delta_h = mask_height - new_height
-    top, bottom = delta_h // 2, delta_h - (delta_h // 2)
-    left, right = delta_w // 2, delta_w - (delta_w // 2)
-
-    # Ajouter des bordures pour centrer l'image dans la zone du masque
-    padded_image = cv2.copyMakeBorder(resized_image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=[0, 0, 0])
-
-    return padded_image
+    return resized_image
 
 def overlay_photos(request):
     if request.method == 'POST':
@@ -123,12 +102,9 @@ def overlay_photos(request):
                     resized_image_rgba = cv2.cvtColor(resized_image, cv2.COLOR_BGR2BGRA)
                     masked_image = cv2.bitwise_and(resized_image_rgba, circular_mask)
 
-                    # Assurer la transparence là où était le noir dans le masque
-                    alpha_mask = circular_mask[:, :, 3] / 255.0
-                    alpha_inv = 1.0 - alpha_mask
+                    # Appliquer l'image redimensionnée avec le masque circulaire sur l'arrière-plan
                     for c in range(3):
-                        background[y:y+h, x:x+w, c] = (alpha_mask * masked_image[:, :, c] +
-                                                       alpha_inv * background[y:y+h, x:x+w, c])
+                        background[y:y+h, x:x+w, c] = masked_image[:, :, c]
 
                     # Convertir l'image finale au format JPEG puis en base64
                     _, buffer = cv2.imencode('.jpg', background)
@@ -157,7 +133,6 @@ def overlay_photos(request):
         return render(request, 'base/upload.html', {'form': form})
 
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=400)
-
 
 
 def contact(request):
